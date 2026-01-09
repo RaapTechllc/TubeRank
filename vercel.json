@@ -1,0 +1,20 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/ingest-channels",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/ingest-keywords",
+      "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/api/cron/ingest-category",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/daily-digest",
+      "schedule": "0 8 * * *"
+    }
+  ]
+}
