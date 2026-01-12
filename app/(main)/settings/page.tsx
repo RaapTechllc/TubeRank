@@ -203,7 +203,7 @@ export default function SettingsPage() {
 
       {/* Action Buttons */}
       {hasChanges && (
-        <div className="flex flex-col sm:flex-row gap-3 p-4 bg-muted/50 rounded-lg border">
+        <div className="flex flex-col sm:flex-row gap-3 p-4 bg-muted/50 rounded-lg border animate-in slide-in-from-bottom-2 duration-300">
           <div className="flex-1">
             <p className="text-sm font-medium">You have unsaved changes</p>
             <p className="text-xs text-muted-foreground">
@@ -215,7 +215,7 @@ export default function SettingsPage() {
               variant="outline"
               onClick={resetSettings}
               disabled={isSaving}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto transition-all duration-200 hover:scale-105"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Reset
@@ -223,7 +223,7 @@ export default function SettingsPage() {
             <Button
               onClick={saveSettings}
               disabled={isSaving}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto transition-all duration-200 hover:scale-105"
             >
               <Save className={`h-4 w-4 mr-2 ${isSaving ? 'animate-spin' : ''}`} />
               {isSaving ? 'Saving...' : 'Save Changes'}

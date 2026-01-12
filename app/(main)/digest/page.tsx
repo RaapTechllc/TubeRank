@@ -83,7 +83,11 @@ export default function DigestPage() {
         </div>
         <div className="grid gap-6">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-64 bg-muted rounded-lg animate-pulse" />
+            <div 
+              key={i} 
+              className="h-64 bg-muted rounded-lg animate-pulse"
+              style={{ animationDelay: `${i * 100}ms` }}
+            />
           ))}
         </div>
       </div>
@@ -130,11 +134,13 @@ export default function DigestPage() {
             const date = new Date(alert.created_at)
             
             return (
-              <Card key={alert.id} className="overflow-hidden">
+              <Card key={alert.id} className="overflow-hidden transition-all duration-200 hover:shadow-lg hover:scale-[1.01] group">
                 <CardHeader className="pb-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex-1">
-                      <CardTitle className="text-lg">{alert.profiles.name}</CardTitle>
+                      <CardTitle className="text-lg group-hover:text-primary transition-colors duration-200">
+                        {alert.profiles.name}
+                      </CardTitle>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
@@ -146,7 +152,7 @@ export default function DigestPage() {
                         </div>
                       </div>
                     </div>
-                    <Badge variant={alert.is_read ? 'secondary' : 'default'}>
+                    <Badge variant={alert.is_read ? 'secondary' : 'default'} className="transition-all duration-200 group-hover:scale-105">
                       {videos.length} videos
                     </Badge>
                   </div>
@@ -157,18 +163,18 @@ export default function DigestPage() {
                       {videos.map((video, index) => (
                         <div
                           key={index}
-                          className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                          className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-all duration-200 hover:scale-[1.01] group/video"
                         >
-                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary transition-all duration-200 group-hover/video:bg-primary/20 group-hover/video:scale-110">
                             {video.rank}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm leading-tight line-clamp-2">
+                            <h4 className="font-medium text-sm leading-tight line-clamp-2 group-hover/video:text-primary transition-colors duration-200">
                               {video.title}
                             </h4>
                           </div>
                           <div className="flex-shrink-0 flex items-center gap-1">
-                            <Star className="h-3 w-3 text-yellow-500" />
+                            <Star className="h-3 w-3 text-yellow-500 transition-transform duration-200 group-hover/video:scale-110" />
                             <span className="text-sm font-medium">{video.score}</span>
                           </div>
                         </div>

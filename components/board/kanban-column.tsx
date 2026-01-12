@@ -37,8 +37,10 @@ export function KanbanColumn({ id, cards, isMobile = false }: KanbanColumnProps)
       </div>
       <div
         ref={setNodeRef}
-        className={`flex-1 p-2 rounded-lg bg-muted/50 transition-colors ${
-          isOver ? 'bg-muted' : ''
+        className={`flex-1 p-2 rounded-lg transition-all duration-300 ${
+          isOver 
+            ? 'bg-primary/10 border-2 border-primary/30 border-dashed' 
+            : 'bg-muted/50 border-2 border-transparent'
         } ${isMobile ? 'min-h-32' : 'min-h-96'} space-y-2`}
         role="region"
         aria-labelledby={`column-${id}-title`}

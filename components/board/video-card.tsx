@@ -28,7 +28,7 @@ export function VideoCard({ card }: VideoCardProps) {
     <Card
       ref={setNodeRef}
       style={style}
-      className="cursor-grab active:cursor-grabbing touch-manipulation focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+      className="cursor-grab active:cursor-grabbing touch-manipulation focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-all duration-200 hover:shadow-md hover:scale-[1.02] group"
       role="article"
       aria-label={`Video: ${video?.title || 'Untitled'} by ${video?.channel_name || 'Unknown channel'}`}
     >
@@ -37,7 +37,7 @@ export function VideoCard({ card }: VideoCardProps) {
           <button 
             {...attributes} 
             {...listeners} 
-            className="touch-none p-1 -m-1 md:p-0 md:m-0 rounded focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2" 
+            className="touch-none p-1 -m-1 md:p-0 md:m-0 rounded focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 opacity-60 group-hover:opacity-100 transition-opacity duration-200" 
             aria-label={`Drag to reorder video: ${video?.title || 'Untitled'}`}
             tabIndex={0}
           >
@@ -45,21 +45,28 @@ export function VideoCard({ card }: VideoCardProps) {
           </button>
           <div className="flex-1 min-w-0">
             {video?.thumbnail_url && (
-              <img
-                src={video.thumbnail_url}
-                alt={`Thumbnail for ${video.title}`}
-                className="w-full aspect-video object-cover rounded mb-2"
-              />
+              <div className="relative overflow-hidden rounded mb-2 group-hover:shadow-sm transition-shadow duration-200">
+                <img
+                  src={video.thumbnail_url}
+                  alt={`Thumbnail for ${video.title}`}
+                  className="w-full aspect-video object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200" />
+              </div>
             )}
-            <h4 className="text-sm font-medium line-clamp-2">{video?.title}</h4>
-            <p className="text-xs text-muted-foreground mt-1">{video?.channel_name}</p>
+            <h4 className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors duration-200">
+              {video?.title}
+            </h4>
+            <p className="text-xs text-muted-foreground mt-1 transition-colors duration-200">
+              {video?.channel_name}
+            </p>
             {score !== undefined && (
               <div className="mt-2 flex items-center gap-1">
                 <span 
-                  className={`text-xs font-medium px-1.5 py-0.5 rounded ${
-                    score >= 75 ? 'bg-green-500/20 text-green-500' :
-                    score >= 50 ? 'bg-yellow-500/20 text-yellow-500' :
-                    'bg-red-500/20 text-red-500'
+                  className={`text-xs font-medium px-1.5 py-0.5 rounded transition-all duration-200 ${
+                    score >= 75 ? 'bg-green-500/20 text-green-500 group-hover:bg-green-500/30' :
+                    score >= 50 ? 'bg-yellow-500/20 text-yellow-500 group-hover:bg-yellow-500/30' :
+                    'bg-red-500/20 text-red-500 group-hover:bg-red-500/30'
                   }`}
                   aria-label={`Score: ${score} out of 100`}
                 >
