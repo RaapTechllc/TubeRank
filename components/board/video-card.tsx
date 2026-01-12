@@ -28,11 +28,16 @@ export function VideoCard({ card }: VideoCardProps) {
     <Card
       ref={setNodeRef}
       style={style}
-      className="cursor-grab active:cursor-grabbing"
+      className="cursor-grab active:cursor-grabbing touch-manipulation"
     >
       <CardContent className="p-3">
         <div className="flex gap-2">
-          <button {...attributes} {...listeners} className="touch-none" aria-label="Drag to reorder">
+          <button 
+            {...attributes} 
+            {...listeners} 
+            className="touch-none p-1 -m-1 md:p-0 md:m-0" 
+            aria-label="Drag to reorder"
+          >
             <GripVertical className="h-4 w-4 text-muted-foreground" />
           </button>
           <div className="flex-1 min-w-0">

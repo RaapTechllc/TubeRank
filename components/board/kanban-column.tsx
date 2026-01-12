@@ -16,13 +16,14 @@ const COLUMN_LABELS: Record<string, string> = {
 interface KanbanColumnProps {
   id: string
   cards: CardWithVideo[]
+  isMobile?: boolean
 }
 
-export function KanbanColumn({ id, cards }: KanbanColumnProps) {
+export function KanbanColumn({ id, cards, isMobile = false }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id })
   
   return (
-    <div className="flex flex-col w-72 shrink-0">
+    <div className={`flex flex-col ${isMobile ? 'w-full' : 'w-72 shrink-0'}`}>
       <div className="flex items-center justify-between mb-3 px-1">
         <h3 className="font-semibold text-sm">{COLUMN_LABELS[id]}</h3>
         <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
@@ -31,9 +32,9 @@ export function KanbanColumn({ id, cards }: KanbanColumnProps) {
       </div>
       <div
         ref={setNodeRef}
-        className={`flex-1 p-2 rounded-lg bg-muted/50 min-h-96 space-y-2 transition-colors ${
+        className={`flex-1 p-2 rounded-lg bg-muted/50 transition-colors ${
           isOver ? 'bg-muted' : ''
-        }`}
+        } ${isMobile ? 'min-h-32' : 'min-h-96'} space-y-2`}
       >
         <SortableContext items={cards.map(c => c.id)} strategy={verticalListSortingStrategy}>
           {cards.map((card) => (

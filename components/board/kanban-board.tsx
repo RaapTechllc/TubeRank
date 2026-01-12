@@ -77,9 +77,9 @@ export function KanbanBoard({ profileId }: KanbanBoardProps) {
   
   if (isLoading) {
     return (
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <div className="flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-5 md:overflow-x-visible">
         {COLUMNS.map((col) => (
-          <div key={col} className="w-72 shrink-0">
+          <div key={col} className="w-72 shrink-0 md:w-auto">
             <div className="h-8 bg-muted rounded animate-pulse mb-3" />
             <div className="h-96 bg-muted/50 rounded-lg animate-pulse" />
           </div>
@@ -95,12 +95,28 @@ export function KanbanBoard({ profileId }: KanbanBoardProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      {/* Mobile: Single column view */}
+      <div className="md:hidden">
+        <div className="grid grid-cols-1 gap-4">
+          {COLUMNS.map((column) => (
+            <KanbanColumn
+              key={column}
+              id={column}
+              cards={getColumnCards(column)}
+              isMobile={true}
+            />
+          ))}
+        </div>
+      </div>
+      
+      {/* Desktop: Multi-column layout */}
+      <div className="hidden md:flex gap-4 overflow-x-auto pb-4">
         {COLUMNS.map((column) => (
           <KanbanColumn
             key={column}
             id={column}
             cards={getColumnCards(column)}
+            isMobile={false}
           />
         ))}
       </div>
