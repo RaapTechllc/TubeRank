@@ -6,10 +6,12 @@ import {
   DragEndEvent,
   DragOverEvent,
   PointerSensor,
+  KeyboardSensor,
   useSensor,
   useSensors,
   closestCorners,
 } from '@dnd-kit/core'
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useProfileCards, useMoveCard } from '@/lib/hooks/use-board'
 import { useBoardStore } from '@/lib/stores/board-store'
 import { KanbanColumn } from './kanban-column'
@@ -29,6 +31,9 @@ export function KanbanBoard({ profileId }: KanbanBoardProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 8 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
     })
   )
   
@@ -96,7 +101,7 @@ export function KanbanBoard({ profileId }: KanbanBoardProps) {
       onDragEnd={handleDragEnd}
     >
       {/* Mobile: Single column view */}
-      <div className="md:hidden">
+      <div className="md:hidden" role="application" aria-label="Kanban board">
         <div className="grid grid-cols-1 gap-4">
           {COLUMNS.map((column) => (
             <KanbanColumn
@@ -110,7 +115,7 @@ export function KanbanBoard({ profileId }: KanbanBoardProps) {
       </div>
       
       {/* Desktop: Multi-column layout */}
-      <div className="hidden md:flex gap-4 overflow-x-auto pb-4">
+      <div className="hidden md:flex gap-4 overflow-x-auto pb-4" role="application" aria-label="Kanban board">
         {COLUMNS.map((column) => (
           <KanbanColumn
             key={column}

@@ -25,8 +25,13 @@ export function KanbanColumn({ id, cards, isMobile = false }: KanbanColumnProps)
   return (
     <div className={`flex flex-col ${isMobile ? 'w-full' : 'w-72 shrink-0'}`}>
       <div className="flex items-center justify-between mb-3 px-1">
-        <h3 className="font-semibold text-sm">{COLUMN_LABELS[id]}</h3>
-        <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+        <h3 className="font-semibold text-sm" id={`column-${id}-title`}>
+          {COLUMN_LABELS[id]}
+        </h3>
+        <span 
+          className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full"
+          aria-label={`${cards.length} cards in ${COLUMN_LABELS[id]} column`}
+        >
           {cards.length}
         </span>
       </div>
@@ -35,14 +40,20 @@ export function KanbanColumn({ id, cards, isMobile = false }: KanbanColumnProps)
         className={`flex-1 p-2 rounded-lg bg-muted/50 transition-colors ${
           isOver ? 'bg-muted' : ''
         } ${isMobile ? 'min-h-32' : 'min-h-96'} space-y-2`}
+        role="region"
+        aria-labelledby={`column-${id}-title`}
+        aria-describedby={`column-${id}-description`}
       >
+        <div id={`column-${id}-description`} className="sr-only">
+          Drop zone for {COLUMN_LABELS[id]} cards. Use arrow keys to navigate and space to pick up or drop cards.
+        </div>
         <SortableContext items={cards.map(c => c.id)} strategy={verticalListSortingStrategy}>
           {cards.map((card) => (
             <VideoCard key={card.id} card={card} />
           ))}
         </SortableContext>
         {cards.length === 0 && (
-          <div className="text-center py-8 text-sm text-muted-foreground">
+          <div className="text-center py-8 text-sm text-muted-foreground" role="status">
             Drop cards here
           </div>
         )}

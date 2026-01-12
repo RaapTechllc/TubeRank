@@ -38,7 +38,7 @@ export function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex gap-6">
+        <nav className="hidden md:flex gap-6" role="navigation" aria-label="Main navigation">
           {navigation.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
@@ -47,11 +47,12 @@ export function Header() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2 text-sm transition-colors hover:text-foreground",
+                  "flex items-center gap-2 text-sm transition-colors hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm px-1 py-1",
                   isActive ? "text-foreground font-medium" : "text-muted-foreground"
                 )}
+                aria-current={isActive ? "page" : undefined}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-4 w-4" aria-hidden="true" />
                 {item.name}
               </Link>
             )
@@ -64,12 +65,14 @@ export function Header() {
           size="icon"
           className="md:hidden"
           onClick={toggleMobileMenu}
-          aria-label="Toggle menu"
+          aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="mobile-navigation"
         >
           {isMobileMenuOpen ? (
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5" aria-hidden="true" />
           ) : (
-            <Menu className="h-5 w-5" />
+            <Menu className="h-5 w-5" aria-hidden="true" />
           )}
         </Button>
       </div>
@@ -84,9 +87,14 @@ export function Header() {
           />
           
           {/* Mobile Menu */}
-          <div className="fixed top-16 left-0 right-0 bg-background border-b shadow-lg z-50 md:hidden">
+          <div 
+            id="mobile-navigation"
+            className="fixed top-16 left-0 right-0 bg-background border-b shadow-lg z-50 md:hidden"
+            role="navigation"
+            aria-label="Main navigation"
+          >
             <nav className="container mx-auto px-4 py-4">
-              <div className="flex flex-col space-y-3">
+              <div className="flex flex-col space-y-3" role="list">
                 {navigation.map((item) => {
                   const Icon = item.icon
                   const isActive = pathname === item.href
@@ -96,13 +104,15 @@ export function Header() {
                       href={item.href}
                       onClick={closeMobileMenu}
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
                         isActive 
                           ? "bg-primary/10 text-primary font-medium" 
                           : "text-muted-foreground hover:text-foreground hover:bg-muted"
                       )}
+                      role="listitem"
+                      aria-current={isActive ? "page" : undefined}
                     >
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-5 w-5" aria-hidden="true" />
                       {item.name}
                     </Link>
                   )
