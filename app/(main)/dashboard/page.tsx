@@ -108,7 +108,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats bar */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
         <div className="border-2 border-primary/30 p-4 relative overflow-hidden group hover:border-primary transition-all perspective-card">
           <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 transform rotate-45 translate-x-8 -translate-y-8" />
           <div className="data-stream" style={{ animationDelay: '0s' }} />

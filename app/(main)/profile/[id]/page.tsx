@@ -65,39 +65,40 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-4">
           <Link href="/dashboard">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="shrink-0">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <div>
-            <h1 className="text-2xl font-bold">{profile.name}</h1>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl sm:text-2xl font-bold truncate">{profile.name}</h1>
             {channelsData?.lastCheckedAt && (
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
-                <Clock className="h-3 w-3" />
-                <span>
+                <Clock className="h-3 w-3 shrink-0" />
+                <span className="truncate">
                   Last checked {formatDistanceToNow(new Date(channelsData.lastCheckedAt), { addSuffix: true })}
                 </span>
               </div>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <Button
             onClick={handleRefresh}
             disabled={isRefreshing}
             variant="outline"
             size="icon"
             title="Refresh videos"
+            className="shrink-0"
           >
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
           </Button>
           <Link href={`/profile/${id}/edit`}>
-            <Button variant="outline">
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
+            <Button variant="outline" className="w-full sm:w-auto">
+              <Settings className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Settings</span>
             </Button>
           </Link>
         </div>
