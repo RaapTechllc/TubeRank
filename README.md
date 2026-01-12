@@ -1,6 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TubeRank
+
+YouTube content intelligence dashboard for triaging and curating video content through RSS feeds.
+
+## Features
+
+- **Profile Management**: Create and manage multiple content curation profiles
+- **Kanban Board**: Triage videos across 5 columns (inbox, recommended, skim, watch, archived)
+- **RSS Ingestion**: Automatic YouTube channel feed ingestion via RSS (no API quota needed)
+- **Manual Refresh**: Trigger feed updates on-demand from dashboard or profile pages
+- **Job Queue**: Resilient background processing with retry logic
+- **Error Alerts**: User-visible notifications when feeds fail after max retries
 
 ## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- Supabase account
+- YouTube API key (optional, for future enrichment features)
+
+### Environment Variables
+
+Copy `.env.local.example` to `.env.local` and configure:
+
+```bash
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# Direct PostgreSQL connection for migrations
+DATABASE_URL=postgresql://postgres:PASSWORD@db.PROJECT-REF.supabase.co:5432/postgres
+
+# Cron Authentication
+CRON_SECRET=your-random-secret-here
+
+# External APIs (optional)
+YOUTUBE_API_KEY=
+OPENROUTER_API_KEY=
+GOOGLE_AI_API_KEY=
+
+# Application
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### Database Setup
+
+Apply the migration in Supabase SQL Editor:
+
+```sql
+ALTER TABLE alerts DROP CONSTRAINT IF EXISTS alerts_alert_type_check;
+ALTER TABLE alerts ADD CONSTRAINT alerts_alert_type_check
+CHECK (alert_type IN (
+  'keyword_match',
+  'category_digest',
+  'channel_upload',
+  'high_score',
+  'feed_error'
+));
+```
+
+### Development Server
 
 First, run the development server:
 
@@ -29,8 +89,117 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## RSS Ingestion
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Manual Triggers
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Global Refresh** (all active profiles):
+```bash
+curl -X POST http://localhost:3000/api/rss/refresh
+```
+
+**Per-Profile Refresh**:
+```bash
+curl -X POST http://localhost:3000/api/rss/refresh/PROFILE_ID
+```
+
+Or use the UI buttons:
+- Dashboard: "Refresh All" button
+- Profile page: Refresh icon near Settings button
+
+### Cron Processing
+
+Process pending jobs:
+```bash
+curl -H "Authorization: Bearer YOUR_CRON_SECRET" \
+  http://localhost:3000/api/cron/ingest-channels
+```
+
+## Rate Limiting
+
+Manual refresh endpoints are rate-limited to prevent abuse:
+
+**Global Refresh** (`/api/rss/refresh`):
+- Limit: 3 requests per 5 minutes per IP address
+- Scope: All channel refreshes across all profiles
+
+**Per-Profile Refresh** (`/api/rss/refresh/[profileId]`):
+- Limit: 10 requests per minute per IP address per profile
+- Scope: Individual profile's channels
+
+**Rate Limit Headers:**
+- `X-RateLimit-Remaining`: Number of requests remaining in current window
+- `Retry-After`: Seconds until rate limit resets (only when blocked)
+
+**429 Response:**
+```json
+{
+  "error": "Too many requests. Please try again later."
+}
+```
+
+**Implementation:**
+- In-memory sliding window algorithm
+- IP-based identification (x-forwarded-for header)
+- Automatic cleanup of expired entries
+- No external dependencies required
+
+## Deployment
+
+### Environment Variables
+
+Required in production:
+- `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+- `SUPABASE_SERVICE_ROLE_KEY` - Service role key for admin operations
+- `CRON_SECRET` - Random secret for authenticating cron requests
+
+### Vercel Deployment
+
+1. Deploy to Vercel via Git integration
+
+2. Vercel Cron (requires Pro plan):
+   - Configured in `vercel.json`
+   - Runs automatically every 15 minutes
+   - No additional setup needed
+
+3. **Alternative: External Cron Service** (free tier compatible):
+   - Use [cron-job.org](https://cron-job.org) or similar
+   - URL: `https://yourdomain.com/api/cron/ingest-channels`
+   - Schedule: `*/15 * * * *` (every 15 minutes)
+   - Header: `Authorization: Bearer {CRON_SECRET}`
+
+### Database Migration
+
+Run this in Supabase SQL Editor after deployment:
+```sql
+ALTER TABLE alerts DROP CONSTRAINT IF EXISTS alerts_alert_type_check;
+ALTER TABLE alerts ADD CONSTRAINT alerts_alert_type_check
+CHECK (alert_type IN (
+  'keyword_match',
+  'category_digest',
+  'channel_upload',
+  'high_score',
+  'feed_error'
+));
+```
+
+## Testing
+
+See [docs/testing/rss-integration-test-guide.md](docs/testing/rss-integration-test-guide.md) for comprehensive testing instructions.
+
+## Architecture
+
+```
+RSS Feed → Parser → Job Queue → Processor → Videos + Cards
+```
+
+- **RSS Parser**: Fetches YouTube channel feeds (no API quota)
+- **Job Queue**: PostgreSQL-backed queue with retry logic
+- **Processor**: Batch processing with timeout safety
+- **Alerts**: Created after 3 failed attempts
+
+## Learn More
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Supabase Documentation](https://supabase.com/docs)
+- [RSS Feed Specification](https://www.rssboard.org/rss-specification)

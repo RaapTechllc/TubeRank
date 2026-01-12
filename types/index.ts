@@ -107,3 +107,23 @@ export interface Channel {
   created_at: string
   updated_at: string
 }
+
+
+export interface ProfileSource {
+  id: string
+  profile_id: string
+  source_type: 'channel' | 'video' | 'keyword' | 'category'
+  source_value: string
+  metadata: Record<string, unknown>
+  created_at: string
+}
+
+export interface ProfileWithSources extends Profile {
+  profile_sources: ProfileSource[]
+}
+
+export interface CardWithVideo extends ProfileVideoCard {
+  video: Video
+  score?: Score
+  summary?: Summary
+}
