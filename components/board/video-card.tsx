@@ -28,7 +28,7 @@ export function VideoCard({ card }: VideoCardProps) {
     <Card
       ref={setNodeRef}
       style={style}
-      className="cursor-grab active:cursor-grabbing touch-manipulation focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-all duration-200 hover:shadow-md hover:scale-[1.02] group"
+      className="cursor-grab active:cursor-grabbing touch-manipulation focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-all duration-200 hover:shadow-md hover:scale-[1.02] group select-none"
       role="article"
       aria-label={`Video: ${video?.title || 'Untitled'} by ${video?.channel_name || 'Unknown channel'}`}
     >
@@ -37,7 +37,7 @@ export function VideoCard({ card }: VideoCardProps) {
           <button 
             {...attributes} 
             {...listeners} 
-            className="touch-none p-1 -m-1 md:p-0 md:m-0 rounded focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 opacity-60 group-hover:opacity-100 transition-opacity duration-200" 
+            className="touch-none p-2 -m-2 lg:p-1 lg:-m-1 rounded focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 opacity-60 group-hover:opacity-100 transition-opacity duration-200 shrink-0" 
             aria-label={`Drag to reorder video: ${video?.title || 'Untitled'}`}
             tabIndex={0}
           >
@@ -50,14 +50,15 @@ export function VideoCard({ card }: VideoCardProps) {
                   src={video.thumbnail_url}
                   alt={`Thumbnail for ${video.title}`}
                   className="w-full aspect-video object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200" />
               </div>
             )}
-            <h4 className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors duration-200">
+            <h4 className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors duration-200 leading-tight">
               {video?.title}
             </h4>
-            <p className="text-xs text-muted-foreground mt-1 transition-colors duration-200">
+            <p className="text-xs text-muted-foreground mt-1 transition-colors duration-200 truncate">
               {video?.channel_name}
             </p>
             {score !== undefined && (

@@ -30,7 +30,11 @@ export function KanbanBoard({ profileId }: KanbanBoardProps) {
   
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
+      activationConstraint: { 
+        distance: 8,
+        delay: 100,
+        tolerance: 5,
+      },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
@@ -82,14 +86,26 @@ export function KanbanBoard({ profileId }: KanbanBoardProps) {
   
   if (isLoading) {
     return (
-      <div className="flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-5 md:overflow-x-visible">
-        {COLUMNS.map((col) => (
-          <div key={col} className="w-72 shrink-0 md:w-auto">
-            <div className="h-8 bg-muted rounded animate-pulse mb-3" />
-            <div className="h-96 bg-muted/50 rounded-lg animate-pulse" />
-          </div>
-        ))}
-      </div>
+      <>
+        {/* Mobile loading */}
+        <div className="lg:hidden flex gap-3 overflow-x-auto pb-4">
+          {COLUMNS.map((col) => (
+            <div key={col} className="w-80 shrink-0">
+              <div className="h-8 bg-muted rounded animate-pulse mb-3" />
+              <div className="h-[50vh] bg-muted/50 rounded-lg animate-pulse" />
+            </div>
+          ))}
+        </div>
+        {/* Desktop loading */}
+        <div className="hidden lg:grid lg:grid-cols-5 gap-4">
+          {COLUMNS.map((col) => (
+            <div key={col} className="w-full">
+              <div className="h-8 bg-muted rounded animate-pulse mb-3" />
+              <div className="h-[60vh] bg-muted/50 rounded-lg animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </>
     )
   }
   
@@ -100,9 +116,9 @@ export function KanbanBoard({ profileId }: KanbanBoardProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      {/* Mobile: Single column view */}
-      <div className="md:hidden" role="application" aria-label="Kanban board">
-        <div className="grid grid-cols-1 gap-4">
+      {/* Mobile: Horizontal scrolling columns */}
+      <div className="lg:hidden" role="application" aria-label="Kanban board">
+        <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory">
           {COLUMNS.map((column) => (
             <KanbanColumn
               key={column}
@@ -115,7 +131,7 @@ export function KanbanBoard({ profileId }: KanbanBoardProps) {
       </div>
       
       {/* Desktop: Multi-column layout */}
-      <div className="hidden md:flex gap-4 overflow-x-auto pb-4" role="application" aria-label="Kanban board">
+      <div className="hidden lg:grid lg:grid-cols-5 gap-4" role="application" aria-label="Kanban board">
         {COLUMNS.map((column) => (
           <KanbanColumn
             key={column}

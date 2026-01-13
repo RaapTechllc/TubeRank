@@ -23,13 +23,13 @@ export function KanbanColumn({ id, cards, isMobile = false }: KanbanColumnProps)
   const { setNodeRef, isOver } = useDroppable({ id })
   
   return (
-    <div className={`flex flex-col ${isMobile ? 'w-full' : 'w-72 shrink-0'}`}>
+    <div className={`flex flex-col ${isMobile ? 'w-80 shrink-0 snap-start' : 'w-full min-w-0'}`}>
       <div className="flex items-center justify-between mb-3 px-1">
-        <h3 className="font-semibold text-sm" id={`column-${id}-title`}>
+        <h3 className="font-semibold text-sm truncate" id={`column-${id}-title`}>
           {COLUMN_LABELS[id]}
         </h3>
         <span 
-          className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full"
+          className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0 ml-2"
           aria-label={`${cards.length} cards in ${COLUMN_LABELS[id]} column`}
         >
           {cards.length}
@@ -41,7 +41,7 @@ export function KanbanColumn({ id, cards, isMobile = false }: KanbanColumnProps)
           isOver 
             ? 'bg-primary/10 border-2 border-primary/30 border-dashed' 
             : 'bg-muted/50 border-2 border-transparent'
-        } ${isMobile ? 'min-h-32' : 'min-h-96'} space-y-2`}
+        } ${isMobile ? 'min-h-[50vh] max-h-[70vh]' : 'min-h-[60vh]'} space-y-2 overflow-y-auto`}
         role="region"
         aria-labelledby={`column-${id}-title`}
         aria-describedby={`column-${id}-description`}
