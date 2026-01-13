@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 import { getEnv } from '@/lib/config/env'
 import { verifyBearerToken } from '@/lib/utils/auth'
+import { enqueueJob } from '@/lib/jobs/queue'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -199,6 +200,24 @@ export async function GET(request: Request) {
           if (videoError || !video) {
             console.error(`Failed to upsert video ${item.id.videoId}:`, videoError)
             continue
+          }
+
+          // Queue transcript fetch job for new videos
+          const { data: existingTranscript } = await supabase
+            .from('transcripts')
+            .select('id')
+            .eq('video_id', video.id)
+            .maybeSingle()
+
+          if (!existingTranscript) {
+            try {
+              await enqueueJob('fetch_transcript', {
+                video_id: video.id,
+                youtube_id: item.id.videoId
+              })
+            } catch (queueError) {
+              console.error(`Failed to queue transcript job for ${item.id.videoId}:`, queueError)
+            }
           }
 
           // Create cards for all profiles that have this keyword

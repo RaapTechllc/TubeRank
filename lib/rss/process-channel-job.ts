@@ -1,5 +1,6 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { fetchYouTubeChannelFeed } from './youtube-parser'
+import { enqueueJob } from '@/lib/jobs/queue'
 
 interface JobPayload {
   channel_youtube_id: string
@@ -11,6 +12,7 @@ export interface ProcessResult {
   success: boolean
   videosProcessed: number
   cardsCreated: number
+  transcriptJobsQueued: number
   error?: string
 }
 
@@ -33,10 +35,11 @@ export async function processChannelJob(
     const videos = await fetchYouTubeChannelFeed(channelId)
 
     if (videos.length === 0) {
-      return { success: true, videosProcessed: 0, cardsCreated: 0 }
+      return { success: true, videosProcessed: 0, cardsCreated: 0, transcriptJobsQueued: 0 }
     }
 
     let cardsCreated = 0
+    let transcriptJobsQueued = 0
 
     // Process each video
     for (const video of videos) {
@@ -62,6 +65,27 @@ export async function processChannelJob(
       if (videoError) {
         console.error(`Failed to upsert video ${video.youtube_id}:`, videoError)
         continue
+      }
+
+      // Check if this video already has a transcript (skip if it does)
+      const { data: existingTranscript } = await supabase
+        .from('transcripts')
+        .select('id')
+        .eq('video_id', videoData.id)
+        .maybeSingle()
+
+      // Queue transcript fetch job for new videos without transcripts
+      if (!existingTranscript) {
+        try {
+          await enqueueJob('fetch_transcript', {
+            video_id: videoData.id,
+            youtube_id: video.youtube_id
+          })
+          transcriptJobsQueued++
+        } catch (queueError) {
+          console.error(`Failed to queue transcript job for ${video.youtube_id}:`, queueError)
+          // Continue processing - don't fail the whole job for queue errors
+        }
       }
 
       // Find profiles with this channel as a source
@@ -117,7 +141,8 @@ export async function processChannelJob(
     return {
       success: true,
       videosProcessed: videos.length,
-      cardsCreated
+      cardsCreated,
+      transcriptJobsQueued
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
@@ -126,6 +151,7 @@ export async function processChannelJob(
       success: false,
       videosProcessed: 0,
       cardsCreated: 0,
+      transcriptJobsQueued: 0,
       error: errorMessage
     }
   }

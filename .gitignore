@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# dev artifacts
+dev.log
+nul
+*.mjs.bak
+
+# agent/tool folders (keep .kiro)
+.agents/
+.claude/
+.sisyphus/
+.vscode/
+
+# temp/external projects
+ralph-claude-code-main/

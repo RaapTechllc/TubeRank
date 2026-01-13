@@ -1,7 +1,17 @@
 import { createServerClient } from '@/lib/supabase/server'
 
-// Types
-export type JobType = 'rss_fetch_channel' | 'keyword_search' | 'category_fetch' | 'daily_digest'
+// Combined job types for RSS/Analytics (Phase 1) and AI Features (Phase 2)
+export type JobType =
+  // RSS/Analytics Jobs (Phase 1)
+  | 'rss_fetch_channel'
+  | 'keyword_search'
+  | 'category_fetch'
+  | 'daily_digest'
+  // AI Feature Jobs (Phase 2)
+  | 'fetch_transcript'
+  | 'summarize_video'
+  | 'score_video'
+  | 'generate_embedding'
 
 export interface RefreshChannelsOptions {
   profileId?: string

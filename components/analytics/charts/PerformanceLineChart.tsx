@@ -116,7 +116,7 @@ export function PerformanceLineChart({
             tickLine={{ stroke: 'var(--border)' }}
             axisLine={{ stroke: 'var(--border)' }}
             tickFormatter={(value: number) =>
-              value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value
+              value >= 1000 ? `${(value / 1000).toFixed(0)}k` : String(value)
             }
           />
           <Tooltip content={<CustomTooltip />} />

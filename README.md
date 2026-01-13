@@ -11,7 +11,63 @@ YouTube content intelligence dashboard for triaging and curating video content t
 - **Job Queue**: Resilient background processing with retry logic
 - **Error Alerts**: User-visible notifications when feeds fail after max retries
 
-## Getting Started
+## Ralph Loop Multi-Agent System
+
+This project uses a Ralph Loop multi-agent system for autonomous development. Each specialized agent works in parallel to complete assigned tasks.
+
+### Quick Start
+
+1. **Start the full system:**
+   ```bash
+   ./scripts/run-orchestrator.sh
+   ```
+
+2. **Monitor progress:**
+   ```bash
+   tail -f PROGRESS.md
+   ```
+
+3. **View agent activity:**
+   ```bash
+   git log --oneline --grep="\\[.*\\]"
+   ```
+
+### Available Agents
+
+| Agent | Responsibilities | Tasks Assigned |
+|-------|------------------|----------------|
+| `code-surgeon` | Security fixes, auth, performance | F1-F5 (5 tasks) |
+| `db-wizard` | Database optimization, queries | B1-B5 (4 tasks) |
+| `frontend-designer` | UI/UX, responsive design | UI1-UI6 (6 tasks) |
+| `test-architect` | Testing, coverage | T1-T5 (5 tasks) |
+| `doc-smith` | Documentation | D1-D5 (5 tasks) |
+| `devops-automator` | CI/CD, deployment | O1-O5 (5 tasks) |
+
+### Manual Agent Control
+
+Run individual agents:
+```bash
+./scripts/run-agent.sh code-surgeon
+./scripts/run-agent.sh frontend-designer
+# etc.
+```
+
+### Progress Tracking
+
+- **PLAN.md**: Master task breakdown and dependencies
+- **PROGRESS.md**: Real-time status of all tasks
+- **Git log**: Detailed history of agent commits
+
+### System Status
+
+Check current progress:
+```bash
+grep -c "🟢 DONE" PROGRESS.md  # Completed tasks
+grep -c "🔴 TODO" PROGRESS.md  # Remaining tasks
+grep -c "🟡 DOING" PROGRESS.md # In progress
+```
+
+## Getting Started (Manual Development)
 
 ### Prerequisites
 
