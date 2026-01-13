@@ -1,5 +1,13 @@
 import { z } from 'zod'
 
+// Simplified schema for basic profile creation
+export const createProfileSchemaSimple = z.object({
+  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
+  description: z.string().max(500, 'Description too long').optional(),
+  type: z.enum(['channel_stack', 'video_set', 'keyword_radar', 'category_pulse', 'custom']).default('custom'),
+})
+
+// Original complex schema
 export const scoreWeightsSchema = z.object({
   relevance: z.number().min(0).max(100),
   novelty: z.number().min(0).max(100),
@@ -13,7 +21,8 @@ export const scoreWeightsSchema = z.object({
 
 export const createProfileSchema = z.object({
   name: z.string().min(1).max(100),
-  type: z.enum(['channel_stack', 'video_set', 'keyword_radar', 'category_pulse', 'custom']),
+  description: z.string().max(500).optional(),
+  type: z.enum(['channel_stack', 'video_set', 'keyword_radar', 'category_pulse', 'custom']).default('custom'),
   system_prompt: z.string().max(2000).optional(),
   score_weights: scoreWeightsSchema.optional(),
 })
