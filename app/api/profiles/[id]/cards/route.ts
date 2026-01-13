@@ -21,6 +21,11 @@ async function handleGET(request: NextRequest, { params }: Params) {
 
   const url = new URL(request.url)
   const fieldsParam = url.searchParams.get('fields')
+  
+  // Pagination parameters
+  const page = Math.max(1, parseInt(url.searchParams.get('page') || '1'))
+  const limit = Math.min(100, Math.max(1, parseInt(url.searchParams.get('limit') || '20')))
+  const offset = (page - 1) * limit
 
   let selectQuery = `
     id,
@@ -84,11 +89,18 @@ async function handleGET(request: NextRequest, { params }: Params) {
     `
   }
 
+  // Get total count for pagination metadata
+  const { count } = await supabase
+    .from('profile_video_cards')
+    .select('*', { count: 'exact', head: true })
+    .eq('profile_id', id)
+
   const { data, error: dbError } = await supabase
     .from('profile_video_cards')
     .select(selectQuery)
     .eq('profile_id', id)
     .order('position', { ascending: true })
+    .range(offset, offset + limit - 1)
 
   if (dbError) {
     return NextResponse.json({ error: dbError.message }, { status: 500 })
@@ -100,7 +112,19 @@ async function handleGET(request: NextRequest, { params }: Params) {
     summary: Array.isArray(card.summary) ? card.summary[0] : card.summary,
   }))
 
-  return NextResponse.json(cards)
+  const totalPages = Math.ceil((count || 0) / limit)
+
+  return NextResponse.json({
+    data: cards,
+    pagination: {
+      page,
+      limit,
+      total: count || 0,
+      totalPages,
+      hasNext: page < totalPages,
+      hasPrev: page > 1
+    }
+  })
 }
 
 export const GET = withRateLimit(handleGET, RATE_LIMITS.API)

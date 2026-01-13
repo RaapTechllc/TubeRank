@@ -22,8 +22,8 @@
 
 | Task | Agent | Status | Started | Completed | Notes |
 |------|-------|--------|---------|-----------|-------|
-| B1: Fix N+1 query patterns | db-wizard | 🟡 DOING | 2026-01-12 22:05 | - | Performance critical |
-| B2: Add pagination to profiles | db-wizard | 🔴 TODO | - | - | Depends on B1 |
+| B1: Fix N+1 query patterns | db-wizard | 🟢 DONE | 2026-01-12 22:05 | 2026-01-12 22:15 | Batch operations implemented, major performance improvement |
+| B2: Add pagination to profiles | db-wizard | 🟡 DOING | 2026-01-12 22:16 | - | Depends on B1 |
 | B3: Parallelize AI job processing | code-surgeon | 🟢 DONE | 2026-01-12 22:15 | 2026-01-12 22:18 | Parallel execution with Promise.allSettled |
 | B4: Optimize batch operations | db-wizard | 🔴 TODO | - | - | Depends on B1 |
 | B5: Add database indexes | db-wizard | 🔴 TODO | - | - | Depends on B4 |

@@ -5,22 +5,45 @@ import { requireAuth } from '@/lib/middleware/auth'
 import { withRateLimit } from '@/lib/rate-limit/middleware'
 import { RATE_LIMITS } from '@/lib/rate-limit/config'
 
-async function handleGET() {
+async function handleGET(request: Request) {
   const { error, user } = await requireAuth()
   if (error) return error
   
+  const url = new URL(request.url)
+  const page = Math.max(1, parseInt(url.searchParams.get('page') || '1'))
+  const limit = Math.min(50, Math.max(1, parseInt(url.searchParams.get('limit') || '10')))
+  const offset = (page - 1) * limit
+  
   const supabase = createServerClient()
+  
+  // Get total count
+  const { count } = await supabase
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
   
   const { data, error: dbError } = await supabase
     .from('profiles')
     .select('*, profile_sources(*)')
     .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1)
   
   if (dbError) {
     return NextResponse.json({ error: dbError.message }, { status: 500 })
   }
   
-  return NextResponse.json(data)
+  const totalPages = Math.ceil((count || 0) / limit)
+  
+  return NextResponse.json({
+    data,
+    pagination: {
+      page,
+      limit,
+      total: count || 0,
+      totalPages,
+      hasNext: page < totalPages,
+      hasPrev: page > 1
+    }
+  })
 }
 
 async function handlePOST(request: Request) {
