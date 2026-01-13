@@ -28,7 +28,7 @@ export function VideoCard({ card }: VideoCardProps) {
     <Card
       ref={setNodeRef}
       style={style}
-      className="cursor-grab active:cursor-grabbing touch-manipulation focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-all duration-200 hover:shadow-md hover:scale-[1.02] group select-none"
+      className="cursor-grab active:cursor-grabbing touch-manipulation focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:scale-[1.02] hover:border-primary/20 group select-none relative overflow-hidden"
       role="article"
       aria-label={`Video: ${video?.title || 'Untitled'} by ${video?.channel_name || 'Unknown channel'}${score !== undefined ? `, Score: ${score}` : ''}`}
       tabIndex={0}
@@ -41,8 +41,11 @@ export function VideoCard({ card }: VideoCardProps) {
         }
       }}
     >
-      <CardContent className="p-3">
-        <div className="flex gap-2">
+      <CardContent className="p-3 relative">
+        {/* Subtle glow effect on hover */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg" />
+        
+        <div className="flex gap-2 relative z-10">
           <button 
             {...attributes} 
             {...listeners} 
@@ -62,14 +65,15 @@ export function VideoCard({ card }: VideoCardProps) {
           </button>
           <div className="flex-1 min-w-0">
             {video?.thumbnail_url && (
-              <div className="relative overflow-hidden rounded mb-2 group-hover:shadow-sm transition-shadow duration-200">
+              <div className="relative overflow-hidden rounded mb-2 group-hover:shadow-md transition-all duration-300">
                 <img
                   src={video.thumbnail_url}
                   alt={`Thumbnail for ${video.title}`}
-                  className="w-full aspect-video object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="w-full aspect-video object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 animate-pulse" />
               </div>
             )}
             <h4 className="text-sm font-medium line-clamp-2 group-hover:text-primary transition-colors duration-200 leading-tight">
@@ -81,10 +85,10 @@ export function VideoCard({ card }: VideoCardProps) {
             {score !== undefined && (
               <div className="mt-2 flex items-center gap-1">
                 <span 
-                  className={`text-xs font-medium px-1.5 py-0.5 rounded transition-all duration-200 ${
-                    score >= 75 ? 'bg-green-500/20 text-green-500 group-hover:bg-green-500/30' :
-                    score >= 50 ? 'bg-yellow-500/20 text-yellow-500 group-hover:bg-yellow-500/30' :
-                    'bg-red-500/20 text-red-500 group-hover:bg-red-500/30'
+                  className={`text-xs font-medium px-2 py-1 rounded-full transition-all duration-300 transform group-hover:scale-105 ${
+                    score >= 75 ? 'bg-green-500/20 text-green-400 group-hover:bg-green-500/30 group-hover:shadow-lg group-hover:shadow-green-500/20' :
+                    score >= 50 ? 'bg-yellow-500/20 text-yellow-400 group-hover:bg-yellow-500/30 group-hover:shadow-lg group-hover:shadow-yellow-500/20' :
+                    'bg-red-500/20 text-red-400 group-hover:bg-red-500/30 group-hover:shadow-lg group-hover:shadow-red-500/20'
                   }`}
                   aria-label={`Score: ${score} out of 100`}
                 >

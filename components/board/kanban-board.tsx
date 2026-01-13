@@ -15,6 +15,7 @@ import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useProfileCards, useMoveCard } from '@/lib/hooks/use-board'
 import { useBoardStore } from '@/lib/stores/board-store'
 import { announceToScreenReader } from '@/lib/utils/focus'
+import { LoadingCard } from '@/components/ui/loading'
 import { KanbanColumn } from './kanban-column'
 import type { CardWithVideo } from '@/types'
 
@@ -103,20 +104,34 @@ export function KanbanBoard({ profileId }: KanbanBoardProps) {
     return (
       <>
         {/* Mobile loading */}
-        <div className="lg:hidden flex gap-3 overflow-x-auto pb-4">
+        <div className="lg:hidden flex gap-4 overflow-x-auto pb-4">
           {COLUMNS.map((col) => (
-            <div key={col} className="w-80 shrink-0">
-              <div className="h-8 bg-muted rounded animate-pulse mb-3" />
-              <div className="h-[50vh] bg-muted/50 rounded-lg animate-pulse" />
+            <div key={col} className="w-80 shrink-0 space-y-3">
+              <div className="flex items-center justify-between mb-3 px-1">
+                <div className="h-5 bg-muted rounded animate-pulse w-20" />
+                <div className="h-6 bg-muted rounded-full animate-pulse w-8" />
+              </div>
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <LoadingCard key={i} />
+                ))}
+              </div>
             </div>
           ))}
         </div>
         {/* Desktop loading */}
-        <div className="hidden lg:grid lg:grid-cols-5 gap-4">
+        <div className="hidden lg:grid lg:grid-cols-5 gap-6">
           {COLUMNS.map((col) => (
-            <div key={col} className="w-full">
-              <div className="h-8 bg-muted rounded animate-pulse mb-3" />
-              <div className="h-[60vh] bg-muted/50 rounded-lg animate-pulse" />
+            <div key={col} className="space-y-3">
+              <div className="flex items-center justify-between mb-3 px-1">
+                <div className="h-5 bg-muted rounded animate-pulse w-24" />
+                <div className="h-6 bg-muted rounded-full animate-pulse w-8" />
+              </div>
+              <div className="space-y-3">
+                {[1, 2].map((i) => (
+                  <LoadingCard key={i} />
+                ))}
+              </div>
             </div>
           ))}
         </div>

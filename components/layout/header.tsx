@@ -61,12 +61,12 @@ export function Header() {
       <SkipLink href="#main-content">Skip to main content</SkipLink>
       <SkipLink href="#main-navigation">Skip to navigation</SkipLink>
       
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link 
           href="/dashboard" 
-          className="text-xl font-bold hover:text-primary transition-colors touch-manipulation"
+          className="text-xl font-bold hover:text-primary transition-all duration-300 touch-manipulation hover:scale-105 hover:text-shadow-neon"
           onClick={closeMobileMenu}
         >
           TubeRank
@@ -82,8 +82,8 @@ export function Header() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2 text-sm transition-colors hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm px-1 py-1",
-                  isActive ? "text-foreground font-medium" : "text-muted-foreground"
+                  "flex items-center gap-2 text-sm transition-all duration-300 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm px-2 py-2 hover:bg-muted/50 hover:scale-105",
+                  isActive ? "text-foreground font-medium bg-primary/10 shadow-sm" : "text-muted-foreground"
                 )}
                 aria-current={isActive ? "page" : undefined}
               >
@@ -98,7 +98,7 @@ export function Header() {
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden h-10 w-10 touch-manipulation"
+          className="md:hidden h-10 w-10 touch-manipulation hover:bg-primary/10 hover:scale-110 transition-all duration-300"
           onClick={toggleMobileMenu}
           aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={isMobileMenuOpen}

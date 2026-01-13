@@ -37,11 +37,11 @@ export function KanbanColumn({ id, cards, isMobile = false }: KanbanColumnProps)
       </div>
       <div
         ref={setNodeRef}
-        className={`flex-1 p-2 rounded-lg transition-all duration-300 ${
+        className={`flex-1 p-3 rounded-xl transition-all duration-500 ${
           isOver 
-            ? 'bg-primary/10 border-2 border-primary/30 border-dashed' 
-            : 'bg-muted/50 border-2 border-transparent'
-        } ${isMobile ? 'min-h-[50vh] max-h-[70vh]' : 'min-h-[60vh]'} space-y-2 overflow-y-auto`}
+            ? 'bg-primary/15 border-2 border-primary/50 border-dashed shadow-lg shadow-primary/20 scale-[1.02]' 
+            : 'bg-muted/30 border-2 border-transparent hover:bg-muted/50 hover:border-muted-foreground/20'
+        } ${isMobile ? 'min-h-[50vh] max-h-[70vh]' : 'min-h-[60vh]'} space-y-3 overflow-y-auto backdrop-blur-sm`}
         role="region"
         aria-labelledby={`column-${id}-title`}
         aria-describedby={`column-${id}-description`}
@@ -55,8 +55,12 @@ export function KanbanColumn({ id, cards, isMobile = false }: KanbanColumnProps)
           ))}
         </SortableContext>
         {cards.length === 0 && (
-          <div className="text-center py-8 text-sm text-muted-foreground" role="status">
-            Drop cards here
+          <div className="text-center py-12 text-sm text-muted-foreground transition-all duration-300 hover:text-foreground" role="status">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted/50 flex items-center justify-center">
+              <div className="w-6 h-6 border-2 border-dashed border-muted-foreground/50 rounded" />
+            </div>
+            <p>Drop cards here</p>
+            <p className="text-xs mt-1 opacity-60">Drag videos to organize</p>
           </div>
         )}
       </div>
