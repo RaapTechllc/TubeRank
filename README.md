@@ -5,11 +5,15 @@ YouTube content intelligence dashboard for triaging and curating video content t
 ## Features
 
 - **Profile Management**: Create and manage multiple content curation profiles
-- **Kanban Board**: Triage videos across 5 columns (inbox, recommended, skim, watch, archived)
+- **Responsive Kanban Board**: Triage videos across 5 columns with mobile-optimized layout and touch support
+- **Digest Page**: Centralized view of high-scoring videos and content highlights across all profiles
+- **Settings Page**: Configure user preferences, notifications, and data management options
 - **RSS Ingestion**: Automatic YouTube channel feed ingestion via RSS (no API quota needed)
-- **Manual Refresh**: Trigger feed updates on-demand from dashboard or profile pages
-- **Job Queue**: Resilient background processing with retry logic
+- **Manual Refresh**: Trigger feed updates on-demand from dashboard or profile pages with rate limiting
+- **Job Queue**: Resilient background processing with retry logic and parallel execution
 - **Error Alerts**: User-visible notifications when feeds fail after max retries
+- **Performance Optimized**: Batch operations, database indexing, and N+1 query elimination
+- **Security Hardened**: Authentication middleware, timing-safe comparisons, and rate limiting protection
 
 ## Ralph Loop Multi-Agent System
 
@@ -34,14 +38,14 @@ This project uses a Ralph Loop multi-agent system for autonomous development. Ea
 
 ### Available Agents
 
-| Agent | Responsibilities | Tasks Assigned |
-|-------|------------------|----------------|
-| `code-surgeon` | Security fixes, auth, performance | F1-F5 (5 tasks) |
-| `db-wizard` | Database optimization, queries | B1-B5 (4 tasks) |
-| `frontend-designer` | UI/UX, responsive design | UI1-UI6 (6 tasks) |
-| `test-architect` | Testing, coverage | T1-T5 (5 tasks) |
-| `doc-smith` | Documentation | D1-D5 (5 tasks) |
-| `devops-automator` | CI/CD, deployment | O1-O5 (5 tasks) |
+| Agent | Responsibilities | Tasks Assigned | Tasks Completed |
+|-------|------------------|----------------|-----------------|
+| `code-surgeon` | Security fixes, auth, performance | 4 tasks | 4/4 ✅ |
+| `db-wizard` | Database optimization, queries | 5 tasks | 5/5 ✅ |
+| `frontend-designer` | UI/UX, responsive design | 6 tasks | 3/6 🔄 |
+| `test-architect` | Testing, coverage | 5 tasks | 0/5 📋 |
+| `doc-smith` | Documentation | 5 tasks | 0/5 📋 |
+| `devops-automator` | CI/CD, deployment | 5 tasks | 0/5 📋 |
 
 ### Manual Agent Control
 
