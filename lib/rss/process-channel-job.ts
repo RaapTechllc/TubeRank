@@ -17,12 +17,11 @@ export interface ProcessResult {
 }
 
 /**
- * Process a single channel RSS ingestion job
+ * Process a single channel RSS ingestion job (optimized for batch operations)
  * @param jobId - Job ID
  * @param payload - Job payload containing channel info
  * @returns Process result with success/failure status
  */
-
 export async function processChannelJob(
   jobId: string,
   payload: JobPayload
@@ -38,15 +37,11 @@ export async function processChannelJob(
       return { success: true, videosProcessed: 0, cardsCreated: 0, transcriptJobsQueued: 0 }
     }
 
-    let cardsCreated = 0
-    let transcriptJobsQueued = 0
-
-    // Process each video
-    for (const video of videos) {
-      // Upsert video
-      const { data: videoData, error: videoError } = await supabase
-        .from('videos')
-        .upsert({
+    // Batch upsert all videos
+    const { data: upsertedVideos, error: videosError } = await supabase
+      .from('videos')
+      .upsert(
+        videos.map(video => ({
           youtube_id: video.youtube_id,
           channel_id: video.channel_id,
           channel_name: video.channel_name,
@@ -55,80 +50,98 @@ export async function processChannelJob(
           published_at: video.published_at,
           thumbnail_url: video.thumbnail_url,
           updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'youtube_id',
-          ignoreDuplicates: false
-        })
-        .select('id')
-        .single()
+        })),
+        { onConflict: 'youtube_id', ignoreDuplicates: false }
+      )
+      .select('id, youtube_id')
 
-      if (videoError) {
-        console.error(`Failed to upsert video ${video.youtube_id}:`, videoError)
-        continue
-      }
+    if (videosError) {
+      throw new Error(`Failed to upsert videos: ${videosError.message}`)
+    }
 
-      // Check if this video already has a transcript (skip if it does)
-      const { data: existingTranscript } = await supabase
-        .from('transcripts')
-        .select('id')
-        .eq('video_id', videoData.id)
-        .maybeSingle()
+    const videoIds = upsertedVideos.map(v => v.id)
+    const videoIdMap = new Map(upsertedVideos.map(v => [v.youtube_id, v.id]))
 
-      // Queue transcript fetch job for new videos without transcripts
-      if (!existingTranscript) {
+    // Batch check existing transcripts
+    const { data: existingTranscripts } = await supabase
+      .from('transcripts')
+      .select('video_id')
+      .in('video_id', videoIds)
+
+    const transcriptVideoIds = new Set(existingTranscripts?.map(t => t.video_id) || [])
+
+    // Queue transcript jobs for videos without transcripts
+    let transcriptJobsQueued = 0
+    for (const video of videos) {
+      const videoId = videoIdMap.get(video.youtube_id)
+      if (videoId && !transcriptVideoIds.has(videoId)) {
         try {
           await enqueueJob('fetch_transcript', {
-            video_id: videoData.id,
+            video_id: videoId,
             youtube_id: video.youtube_id
           })
           transcriptJobsQueued++
         } catch (queueError) {
           console.error(`Failed to queue transcript job for ${video.youtube_id}:`, queueError)
-          // Continue processing - don't fail the whole job for queue errors
         }
       }
+    }
 
-      // Find profiles with this channel as a source
-      const { data: profileSources } = await supabase
-        .from('profile_sources')
-        .select('profile_id, profiles!inner(is_active)')
-        .eq('source_type', 'channel')
-        .eq('source_value', channelId)
+    // Get all active profile sources for this channel (single query)
+    const { data: profileSources } = await supabase
+      .from('profile_sources')
+      .select('profile_id, profiles!inner(is_active)')
+      .eq('source_type', 'channel')
+      .eq('source_value', channelId)
 
-      if (!profileSources || profileSources.length === 0) {
-        continue
-      }
+    if (!profileSources || profileSources.length === 0) {
+      return { success: true, videosProcessed: videos.length, cardsCreated: 0, transcriptJobsQueued }
+    }
 
-      // Create cards for each profile
-      for (const source of profileSources) {
-        const profiles = source.profiles as unknown as { is_active: boolean } | null
-        if (!profiles?.is_active) continue
+    const activeProfiles = profileSources
+      .filter(s => (s.profiles as unknown as { is_active: boolean })?.is_active)
+      .map(s => s.profile_id)
 
-        // Check if card already exists
-        const { data: existingCard } = await supabase
-          .from('profile_video_cards')
-          .select('id')
-          .eq('profile_id', source.profile_id)
-          .eq('video_id', videoData.id)
-          .maybeSingle()
+    if (activeProfiles.length === 0) {
+      return { success: true, videosProcessed: videos.length, cardsCreated: 0, transcriptJobsQueued }
+    }
 
-        if (existingCard) {
-          continue
-        }
+    // Batch check existing cards
+    const { data: existingCards } = await supabase
+      .from('profile_video_cards')
+      .select('profile_id, video_id')
+      .in('profile_id', activeProfiles)
+      .in('video_id', videoIds)
 
-        // Create new card
-        const { error: cardError } = await supabase
-          .from('profile_video_cards')
-          .insert({
-            profile_id: source.profile_id,
-            video_id: videoData.id,
-            column_status: 'inbox',
+    const existingCardKeys = new Set(
+      existingCards?.map(c => `${c.profile_id}:${c.video_id}`) || []
+    )
+
+    // Prepare cards to insert
+    const cardsToInsert = []
+    for (const profileId of activeProfiles) {
+      for (const videoId of videoIds) {
+        const key = `${profileId}:${videoId}`
+        if (!existingCardKeys.has(key)) {
+          cardsToInsert.push({
+            profile_id: profileId,
+            video_id: videoId,
+            column_status: 'inbox' as const,
             position: 0
           })
-
-        if (!cardError) {
-          cardsCreated++
         }
+      }
+    }
+
+    // Batch insert cards
+    let cardsCreated = 0
+    if (cardsToInsert.length > 0) {
+      const { error: cardsError } = await supabase
+        .from('profile_video_cards')
+        .insert(cardsToInsert)
+
+      if (!cardsError) {
+        cardsCreated = cardsToInsert.length
       }
     }
 

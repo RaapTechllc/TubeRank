@@ -1,5 +1,5 @@
 import { createServerClient } from '@/lib/supabase/server'
-import { enqueueJob, checkPendingJob } from '@/lib/jobs/queue'
+import { enqueueJob, checkPendingJobs } from '@/lib/jobs/queue'
 import type { EnqueueResult } from './types'
 
 export interface RefreshChannelsOptions {
@@ -8,11 +8,10 @@ export interface RefreshChannelsOptions {
 }
 
 /**
- * Refresh channels for RSS ingestion
+ * Refresh channels for RSS ingestion (optimized with batch operations)
  * @param options - Options for filtering channels to refresh
  * @returns Result with count of enqueued and skipped jobs
  */
-
 export async function refreshChannels(
   options: RefreshChannelsOptions = {}
 ): Promise<EnqueueResult> {
@@ -55,10 +54,11 @@ export async function refreshChannels(
     )
   )
 
-  for (const channelId of channels) {
-    const hasPending = await checkPendingJob('rss_fetch_channel', channelId)
+  // Batch check for pending jobs
+  const pendingChannels = await checkPendingJobs('rss_fetch_channel', channels)
 
-    if (hasPending) {
+  for (const channelId of channels) {
+    if (pendingChannels.has(channelId)) {
       skipped++
       continue
     }

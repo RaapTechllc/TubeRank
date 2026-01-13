@@ -221,3 +221,36 @@ export async function getBatchJobs(
 
   return data || []
 }
+/**
+ * Batch check if jobs are already pending or running
+ * @param jobType - Type of job
+ * @param channelIds - Array of YouTube channel IDs
+ * @returns Set of channel IDs that have pending/running jobs
+ */
+export async function checkPendingJobs(
+  jobType: JobType,
+  channelIds: string[]
+): Promise<Set<string>> {
+  if (channelIds.length === 0) return new Set()
+
+  const supabase = createServerClient()
+
+  const { data } = await supabase
+    .from('job_queue')
+    .select('payload')
+    .eq('job_type', jobType)
+    .in('status', ['pending', 'running'])
+
+  const pendingChannels = new Set<string>()
+  
+  if (data) {
+    for (const job of data) {
+      const payload = job.payload as { channel_youtube_id?: string }
+      if (payload.channel_youtube_id && channelIds.includes(payload.channel_youtube_id)) {
+        pendingChannels.add(payload.channel_youtube_id)
+      }
+    }
+  }
+
+  return pendingChannels
+}

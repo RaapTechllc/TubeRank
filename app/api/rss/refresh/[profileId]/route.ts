@@ -6,12 +6,12 @@ import { RATE_LIMITS } from '@/lib/rate-limit/config'
 import { refreshChannels } from '@/lib/rss/refresh-helper'
 
 async function handlePOST(
-  const { error, user } = await requireAuth()
-  if (error) return error
-
   request: NextRequest,
   context: { params: Promise<{ profileId: string }> }
 ) {
+  const { error, user } = await requireAuth()
+  if (error) return error
+
   const { profileId } = await context.params
 
   // Validate profileId
