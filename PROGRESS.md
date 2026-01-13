@@ -43,7 +43,7 @@
 
 | Task | Agent | Status | Started | Completed | Notes |
 |------|-------|--------|---------|-----------|-------|
-| T1: Unit tests for API routes | test-architect | 🟡 DOING | 2026-01-12 22:46 | - | Writing comprehensive API route tests |
+| T1: Unit tests for API routes | test-architect | 🔴 TODO | - | - | Reset: previous attempt abandoned without commits |
 | T2: Integration tests RSS | test-architect | 🔴 TODO | - | - | Depends on T1 |
 | T3: E2E tests Kanban workflow | test-architect | 🔴 TODO | - | - | Depends on UI1 |
 | T4: Performance testing | test-architect | 🔴 TODO | - | - | Depends on B3 |
