@@ -35,7 +35,7 @@
 | UI1: Responsive Kanban board | frontend-designer | 🟢 DONE | 2026-01-12 22:03 | 2026-01-12 22:08 | Mobile horizontal scroll, desktop grid, improved touch |
 | UI2: Create Digest page | frontend-designer | 🟢 DONE | 2026-01-12 22:09 | 2026-01-12 22:15 | Enhanced responsive design, mobile UX improvements |
 | UI3: Create Settings page | frontend-designer | 🟢 DONE | 2026-01-12 22:16 | 2026-01-12 22:20 | Enhanced responsive design, mobile form controls |
-| UI4: Mobile navigation UX | frontend-designer | 🔴 TODO | - | - | Depends on UI3 |
+| UI4: Mobile navigation UX | frontend-designer | 🟢 DONE | 2026-01-13 06:00 | 2026-01-13 06:05 | Enhanced touch targets, animations, gestures, and accessibility |
 | UI5: Accessibility compliance | frontend-designer | 🔴 TODO | - | - | WCAG 2.1 |
 | UI6: Visual design polish | frontend-designer | 🔴 TODO | - | - | Final polish |
 
@@ -54,7 +54,7 @@
 | Task | Agent | Status | Started | Completed | Notes |
 |------|-------|--------|---------|-----------|-------|
 | D1: Update README | doc-smith | 🟢 DONE | 2026-01-12 23:15 | 2026-01-12 23:18 | Updated with completed features and current agent status |
-| D2: API documentation | doc-smith | 🔴 TODO | - | - | Depends on T1 |
+| D2: API documentation | doc-smith | 🟢 DONE | 2026-01-13 06:00 | 2026-01-13 06:05 | Comprehensive API docs with all endpoints, schemas, and examples |
 | D3: Deployment guide | doc-smith | 🔴 TODO | - | - | Depends on D1 |
 | D4: User guide with screenshots | doc-smith | 🔴 TODO | - | - | Depends on D2 |
 | D5: Architecture documentation | doc-smith | 🔴 TODO | - | - | Depends on D3 |
