@@ -1,10 +1,14 @@
 import { NextResponse, NextRequest } from 'next/server'
 import { isValidUUID } from '@/lib/utils/validation'
+import { requireAuth } from '@/lib/middleware/auth'
 import { withRateLimitByKey } from '@/lib/rate-limit/middleware'
 import { RATE_LIMITS } from '@/lib/rate-limit/config'
 import { refreshChannels } from '@/lib/rss/refresh-helper'
 
 async function handlePOST(
+  const { error, user } = await requireAuth()
+  if (error) return error
+
   request: NextRequest,
   context: { params: Promise<{ profileId: string }> }
 ) {

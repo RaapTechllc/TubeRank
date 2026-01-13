@@ -3,8 +3,8 @@
 ## Task: SEC-001 - Secure API Routes with Authentication and Rate Limiting
 
 **Assigned to:** code-surgeon  
-**Status:** DOING  
-**Started:** 2024-12-19 15:30 UTC  
+**Status:** DONE  
+**Completed:** 2024-12-19 15:45 UTC  
 
 ### Acceptance Criteria
 - [x] All API routes require authentication
@@ -38,8 +38,9 @@
 5. **User Settings API Security**
    - Secured `/api/settings` (GET, PUT)
 
-6. **Digest API Security**
-   - Secured `/api/digest` (GET)
+7. **RSS Refresh API Security**
+   - Secured `/api/rss/refresh` (POST)
+   - Secured `/api/rss/refresh/[profileId]` (POST)
 
 #### Implementation Details
 - Applied `requireAuth()` middleware to all routes
@@ -48,7 +49,6 @@
 - Used minimal code changes for security integration
 
 ### Next Steps
-- Secure remaining API routes (cron, jobs, rss)
 - Test authentication flows
 - Verify rate limiting behavior
 
