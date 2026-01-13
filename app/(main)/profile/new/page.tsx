@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectItem } from '@/components/ui/select'
 import { ArrowLeft, Save } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -109,19 +109,15 @@ export default function NewProfilePage() {
             <div className="space-y-2">
               <Label htmlFor="type">Profile Type</Label>
               <Select
+                id="type"
                 value={formData.type}
-                onValueChange={(value: any) => setFormData(prev => ({ ...prev, type: value }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as any }))}
               >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="custom">Custom</SelectItem>
-                  <SelectItem value="channel_stack">Channel Stack</SelectItem>
-                  <SelectItem value="video_set">Video Set</SelectItem>
-                  <SelectItem value="keyword_radar">Keyword Radar</SelectItem>
-                  <SelectItem value="category_pulse">Category Pulse</SelectItem>
-                </SelectContent>
+                <SelectItem value="custom">Custom</SelectItem>
+                <SelectItem value="channel_stack">Channel Stack</SelectItem>
+                <SelectItem value="video_set">Video Set</SelectItem>
+                <SelectItem value="keyword_radar">Keyword Radar</SelectItem>
+                <SelectItem value="category_pulse">Category Pulse</SelectItem>
               </Select>
             </div>
 
