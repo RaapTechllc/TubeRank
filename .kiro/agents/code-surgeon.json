@@ -12,6 +12,7 @@
   ],
   "allowedTools": [
     "read",
+    "write",
     "glob",
     "grep",
     "shell:git",
@@ -20,30 +21,33 @@
     "shell:npx"
   ],
   "resources": [
-    "file://.kiro/steering/**/*.md",
-    "file://src/**/*.ts",
-    "file://src/**/*.tsx",
-    "file://prisma/schema.prisma",
+    "file://PLAN.md",
+    "file://PROGRESS.md",
+    "file://app/**/*.ts",
+    "file://app/**/*.tsx", 
+    "file://lib/**/*.ts",
+    "file://lib/**/*.tsx",
     "file://package.json",
-    "file://tsconfig.json",
-    "file://.eslintrc.json"
+    "file://tsconfig.json"
   ],
   "toolsSettings": {
     "read": {
       "allowedPaths": [
-        "./src/**",
-        "./prisma/**",
-        "./tests/**",
-        "./.kiro/**",
+        "./app/**",
+        "./lib/**",
+        "./components/**",
+        "./PLAN.md",
+        "./PROGRESS.md",
         "./package.json",
-        "./tsconfig.json",
-        "./.eslintrc.json"
+        "./tsconfig.json"
       ]
     },
     "write": {
       "allowedPaths": [
-        "./src/**",
-        "./tests/**"
+        "./app/**",
+        "./lib/**",
+        "./components/**",
+        "./PROGRESS.md"
       ]
     }
   }

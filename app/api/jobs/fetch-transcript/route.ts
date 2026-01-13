@@ -8,7 +8,8 @@ export const maxDuration = 30
 
 export async function POST(request: Request) {
   const authHeader = request.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const { verifyBearerToken } = await import('@/lib/utils/auth')
+  if (!verifyBearerToken(authHeader, process.env.CRON_SECRET!)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
