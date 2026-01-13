@@ -25,8 +25,8 @@
 | B1: Fix N+1 query patterns | db-wizard | 🟢 DONE | 2026-01-12 22:05 | 2026-01-12 22:15 | Batch operations implemented, major performance improvement |
 | B2: Add pagination to profiles | db-wizard | 🟢 DONE | 2026-01-12 22:16 | 2026-01-12 22:25 | Pagination added to key endpoints |
 | B3: Parallelize AI job processing | code-surgeon | 🟢 DONE | 2026-01-12 22:15 | 2026-01-12 22:18 | Parallel execution with Promise.allSettled |
-| B4: Optimize batch operations | db-wizard | 🟡 DOING | 2026-01-12 22:26 | - | Depends on B1 |
-| B5: Add database indexes | db-wizard | 🔴 TODO | - | - | Depends on B4 |
+| B4: Optimize batch operations | db-wizard | 🟢 DONE | 2026-01-12 22:26 | 2026-01-12 22:35 | Batch API and repository methods added |
+| B5: Add database indexes | db-wizard | 🟡 DOING | 2026-01-12 22:36 | - | Depends on B4 |
 
 ## Phase 3: Frontend Polish (3/6 completed)
 
