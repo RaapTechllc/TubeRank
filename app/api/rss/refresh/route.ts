@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server'
-import { withRateLimit } from '@/lib/rate-limit/middleware'
-import { requireAuth } from '@/lib/middleware/auth'
-import { RATE_LIMITS } from '@/lib/rate-limit/config'
 import { refreshChannels } from '@/lib/rss/refresh-helper'
 
-async function handlePOST() {
-  const { error, user } = await requireAuth()
-  if (error) return error
-
+export async function POST() {
   try {
     const result = await refreshChannels()
     return NextResponse.json(result)
@@ -19,6 +13,3 @@ async function handlePOST() {
     )
   }
 }
-
-// Export rate-limited handler
-export const POST = withRateLimit(handlePOST, RATE_LIMITS.GLOBAL_REFRESH)
