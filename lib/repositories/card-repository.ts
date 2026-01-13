@@ -120,4 +120,62 @@ export class CardRepository {
   async move(cardId: string, columnStatus: string, position: number) {
     return this.update(cardId, { column_status: columnStatus, position })
   }
+
+  /**
+   * Batch update multiple cards efficiently
+   * @param updates - Array of card updates with id and fields
+   * @returns Array of updated cards
+   */
+  async batchUpdate(updates: Array<{ id: string; updates: Record<string, unknown> }>) {
+    if (updates.length === 0) return []
+
+    // Use upsert for batch operations
+    const upsertData = updates.map(({ id, updates: cardUpdates }) => ({
+      id,
+      ...cardUpdates,
+      updated_at: new Date().toISOString()
+    }))
+
+    const { data, error } = await this.supabase
+      .from('profile_video_cards')
+      .upsert(upsertData, { onConflict: 'id' })
+      .select()
+
+    if (error) throw error
+    return data
+  }
+
+  /**
+   * Batch move multiple cards efficiently
+   * @param moves - Array of card moves
+   * @returns Array of updated cards
+   */
+  async batchMove(moves: Array<{ id: string; columnStatus: string; position: number }>) {
+    const updates = moves.map(move => ({
+      id: move.id,
+      updates: {
+        column_status: move.columnStatus,
+        position: move.position
+      }
+    }))
+
+    return this.batchUpdate(updates)
+  }
+
+  /**
+   * Batch delete multiple cards efficiently
+   * @param cardIds - Array of card IDs to delete
+   * @returns Number of deleted cards
+   */
+  async batchDelete(cardIds: string[]) {
+    if (cardIds.length === 0) return 0
+
+    const { error } = await this.supabase
+      .from('profile_video_cards')
+      .delete()
+      .in('id', cardIds)
+
+    if (error) throw error
+    return cardIds.length
+  }
 }

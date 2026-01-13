@@ -37,15 +37,18 @@ export class CardService {
   }
 
   /**
-   * Batch move multiple cards
+   * Batch move multiple cards efficiently
    * @param moves - Array of card moves
    * @returns Array of updated cards
    */
   async batchMoveCards(moves: Array<{ cardId: string; columnStatus: 'inbox' | 'recommended' | 'skim' | 'watch' | 'archived'; position: number }>) {
-    const results = await Promise.all(
-      moves.map(move => this.moveCard(move.cardId, move.columnStatus, move.position))
-    )
-    return results
+    const batchMoves = moves.map(move => ({
+      id: move.cardId,
+      columnStatus: move.columnStatus,
+      position: move.position
+    }))
+    
+    return this.cardRepo.batchMove(batchMoves)
   }
 
   /**
@@ -56,5 +59,28 @@ export class CardService {
    */
   async updateCard(cardId: string, updates: Record<string, unknown>): Promise<CardWithVideo> {
     return this.cardRepo.update(cardId, updates)
+  }
+
+  /**
+   * Batch update multiple cards efficiently
+   * @param updates - Array of card updates
+   * @returns Array of updated cards
+   */
+  async batchUpdateCards(updates: Array<{ cardId: string; updates: Record<string, unknown> }>) {
+    const batchUpdates = updates.map(update => ({
+      id: update.cardId,
+      updates: update.updates
+    }))
+    
+    return this.cardRepo.batchUpdate(batchUpdates)
+  }
+
+  /**
+   * Batch delete multiple cards efficiently
+   * @param cardIds - Array of card IDs to delete
+   * @returns Number of deleted cards
+   */
+  async batchDeleteCards(cardIds: string[]) {
+    return this.cardRepo.batchDelete(cardIds)
   }
 }
