@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { SkipLink } from '@/components/ui/skip-link'
 import { Menu, X, Home, FileText, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -56,7 +57,11 @@ export function Header() {
   }, [isMobileMenuOpen])
 
   return (
-    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+    <>
+      <SkipLink href="#main-content">Skip to main content</SkipLink>
+      <SkipLink href="#main-navigation">Skip to navigation</SkipLink>
+      
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link 
@@ -68,7 +73,7 @@ export function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex gap-6" role="navigation" aria-label="Main navigation">
+        <nav id="main-navigation" className="hidden md:flex gap-6" role="navigation" aria-label="Main navigation">
           {navigation.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
@@ -201,5 +206,6 @@ export function Header() {
         }
       `}</style>
     </header>
+    </>
   )
 }

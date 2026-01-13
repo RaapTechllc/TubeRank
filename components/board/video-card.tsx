@@ -30,7 +30,16 @@ export function VideoCard({ card }: VideoCardProps) {
       style={style}
       className="cursor-grab active:cursor-grabbing touch-manipulation focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 transition-all duration-200 hover:shadow-md hover:scale-[1.02] group select-none"
       role="article"
-      aria-label={`Video: ${video?.title || 'Untitled'} by ${video?.channel_name || 'Unknown channel'}`}
+      aria-label={`Video: ${video?.title || 'Untitled'} by ${video?.channel_name || 'Unknown channel'}${score !== undefined ? `, Score: ${score}` : ''}`}
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          // Focus the drag handle for keyboard users
+          const dragHandle = e.currentTarget.querySelector('[role="button"]') as HTMLElement
+          dragHandle?.focus()
+        }
+      }}
     >
       <CardContent className="p-3">
         <div className="flex gap-2">
@@ -39,7 +48,15 @@ export function VideoCard({ card }: VideoCardProps) {
             {...listeners} 
             className="touch-none p-2 -m-2 lg:p-1 lg:-m-1 rounded focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 opacity-60 group-hover:opacity-100 transition-opacity duration-200 shrink-0" 
             aria-label={`Drag to reorder video: ${video?.title || 'Untitled'}`}
+            role="button"
             tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                // Activate drag mode for keyboard users
+                e.currentTarget.focus()
+              }
+            }}
           >
             <GripVertical className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </button>

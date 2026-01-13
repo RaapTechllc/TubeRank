@@ -8,7 +8,7 @@ export default function MainLayout({
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto py-6">
+      <main id="main-content" className="container mx-auto py-6" role="main" aria-label="Main content">
         {children}
       </main>
     </div>

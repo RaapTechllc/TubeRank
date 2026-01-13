@@ -14,6 +14,7 @@ import {
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useProfileCards, useMoveCard } from '@/lib/hooks/use-board'
 import { useBoardStore } from '@/lib/stores/board-store'
+import { announceToScreenReader } from '@/lib/utils/focus'
 import { KanbanColumn } from './kanban-column'
 import type { CardWithVideo } from '@/types'
 
@@ -81,6 +82,20 @@ export function KanbanBoard({ profileId }: KanbanBoardProps) {
         column: card.column_status,
         position: card.position,
       })
+      
+      // Announce the move to screen readers
+      const columnLabels: Record<string, string> = {
+        inbox: 'Inbox',
+        recommended: 'Recommended', 
+        skim: 'Skim',
+        watch: 'Watch',
+        archived: 'Archived'
+      }
+      
+      announceToScreenReader(
+        `Moved ${card.video?.title || 'video'} to ${columnLabels[card.column_status]} column`,
+        'assertive'
+      )
     }
   }
   
@@ -116,6 +131,9 @@ export function KanbanBoard({ profileId }: KanbanBoardProps) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
+      {/* Live region for screen reader announcements */}
+      <div aria-live="assertive" aria-atomic="true" className="sr-only" id="kanban-announcements" />
+      
       {/* Mobile: Horizontal scrolling columns */}
       <div className="lg:hidden" role="application" aria-label="Kanban board">
         <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory">
