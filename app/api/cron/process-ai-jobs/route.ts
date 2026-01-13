@@ -62,7 +62,7 @@ export async function GET(request: Request) {
     const requestUrl = new URL(request.url)
     const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`
 
-    // Process jobs in order - fetch_transcript → summarize → score → embed
+    // Process jobs in parallel by type, respecting dependencies
     for (const jobType of JOB_ORDER) {
       // Check timeout
       const elapsed = Date.now() - startTime
@@ -72,14 +72,16 @@ export async function GET(request: Request) {
       }
 
       // Get batch of pending jobs for this type
-      const jobs = await getBatchJobs(jobType, 5)
+      const jobs = await getBatchJobs(jobType, 10) // Increased batch size for parallelization
 
-      for (const job of jobs) {
-        // Check timeout again per job
+      if (jobs.length === 0) continue
+
+      // Process jobs in parallel using Promise.allSettled
+      const jobPromises = jobs.map(async (job) => {
+        // Check timeout per job
         const jobElapsed = Date.now() - startTime
         if (jobElapsed > maxDurationMs - timeoutBuffer) {
-          console.log(`Approaching timeout, stopping at ${jobType}`)
-          break
+          return { jobType, success: false, error: 'Timeout' }
         }
 
         results[jobType].processed++
@@ -106,7 +108,7 @@ export async function GET(request: Request) {
 
           if (response.ok && result.success) {
             await completeJob(job.id)
-            results[jobType].succeeded++
+            return { jobType, success: true }
           } else {
             const shouldRetry = job.attempts < (job.max_attempts || 3)
             await markJobFailed(
@@ -114,16 +116,32 @@ export async function GET(request: Request) {
               result.error || `HTTP ${response.status}`,
               shouldRetry
             )
-            results[jobType].failed++
+            return { jobType, success: false, error: result.error }
           }
         } catch (error) {
           console.error(`Error processing ${jobType} job ${job.id}:`, error)
           const errorMsg = error instanceof Error ? error.message : String(error)
           const shouldRetry = job.attempts < (job.max_attempts || 3)
           await markJobFailed(job.id, errorMsg, shouldRetry)
+          return { jobType, success: false, error: errorMsg }
+        }
+      })
+
+      // Wait for all jobs of this type to complete
+      const jobResults = await Promise.allSettled(jobPromises)
+      
+      // Update results based on outcomes
+      jobResults.forEach((result) => {
+        if (result.status === 'fulfilled') {
+          if (result.value.success) {
+            results[jobType].succeeded++
+          } else {
+            results[jobType].failed++
+          }
+        } else {
           results[jobType].failed++
         }
-      }
+      })
     }
 
     // Update job run
