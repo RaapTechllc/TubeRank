@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -25,13 +25,43 @@ export function Header() {
     setIsMobileMenuOpen(false)
   }
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    closeMobileMenu()
+  }, [pathname])
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMobileMenuOpen])
+
+  // Handle escape key to close mobile menu
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        closeMobileMenu()
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isMobileMenuOpen])
+
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link 
           href="/dashboard" 
-          className="text-xl font-bold hover:text-primary transition-colors"
+          className="text-xl font-bold hover:text-primary transition-colors touch-manipulation"
           onClick={closeMobileMenu}
         >
           TubeRank
@@ -63,65 +93,113 @@ export function Header() {
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden"
+          className="md:hidden h-10 w-10 touch-manipulation"
           onClick={toggleMobileMenu}
           aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={isMobileMenuOpen}
           aria-controls="mobile-navigation"
         >
-          {isMobileMenuOpen ? (
-            <X className="h-5 w-5" aria-hidden="true" />
-          ) : (
-            <Menu className="h-5 w-5" aria-hidden="true" />
-          )}
+          <div className="relative h-5 w-5">
+            <Menu 
+              className={cn(
+                "h-5 w-5 absolute transition-all duration-200",
+                isMobileMenuOpen ? "rotate-90 opacity-0" : "rotate-0 opacity-100"
+              )} 
+              aria-hidden="true" 
+            />
+            <X 
+              className={cn(
+                "h-5 w-5 absolute transition-all duration-200",
+                isMobileMenuOpen ? "rotate-0 opacity-100" : "-rotate-90 opacity-0"
+              )} 
+              aria-hidden="true" 
+            />
+          </div>
         </Button>
       </div>
 
       {/* Mobile Navigation Menu */}
-      {isMobileMenuOpen && (
-        <>
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
-            onClick={closeMobileMenu}
-          />
-          
-          {/* Mobile Menu */}
-          <div 
-            id="mobile-navigation"
-            className="fixed top-16 left-0 right-0 bg-background border-b shadow-lg z-50 md:hidden"
-            role="navigation"
-            aria-label="Main navigation"
-          >
-            <nav className="container mx-auto px-4 py-4">
-              <div className="flex flex-col space-y-3" role="list">
-                {navigation.map((item) => {
-                  const Icon = item.icon
-                  const isActive = pathname === item.href
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={closeMobileMenu}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-                        isActive 
-                          ? "bg-primary/10 text-primary font-medium" 
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                      )}
-                      role="listitem"
-                      aria-current={isActive ? "page" : undefined}
-                    >
+      <div 
+        className={cn(
+          "fixed inset-0 z-40 md:hidden transition-all duration-300",
+          isMobileMenuOpen ? "visible" : "invisible"
+        )}
+      >
+        {/* Backdrop */}
+        <div 
+          className={cn(
+            "absolute inset-0 bg-background/80 backdrop-blur-sm transition-opacity duration-300",
+            isMobileMenuOpen ? "opacity-100" : "opacity-0"
+          )}
+          onClick={closeMobileMenu}
+          aria-hidden="true"
+        />
+        
+        {/* Mobile Menu */}
+        <div 
+          id="mobile-navigation"
+          className={cn(
+            "absolute top-16 left-0 right-0 bg-background border-b shadow-lg transition-all duration-300 transform",
+            isMobileMenuOpen ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"
+          )}
+          role="navigation"
+          aria-label="Main navigation"
+        >
+          <nav className="container mx-auto px-4 py-6">
+            <div className="flex flex-col space-y-2" role="list">
+              {navigation.map((item, index) => {
+                const Icon = item.icon
+                const isActive = pathname === item.href
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={closeMobileMenu}
+                    className={cn(
+                      "flex items-center gap-4 px-4 py-4 rounded-xl text-base font-medium transition-all duration-200 touch-manipulation",
+                      "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                      "active:scale-95 active:bg-muted/50",
+                      isActive 
+                        ? "bg-primary/10 text-primary shadow-sm border border-primary/20" 
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    )}
+                    style={{
+                      animationDelay: `${index * 50}ms`,
+                      animation: isMobileMenuOpen ? 'slideInUp 0.3s ease-out forwards' : 'none'
+                    }}
+                    role="listitem"
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    <div className={cn(
+                      "flex items-center justify-center w-8 h-8 rounded-lg transition-colors",
+                      isActive ? "bg-primary/20" : "bg-muted/50"
+                    )}>
                       <Icon className="h-5 w-5" aria-hidden="true" />
-                      {item.name}
-                    </Link>
-                  )
-                })}
-              </div>
-            </nav>
-          </div>
-        </>
-      )}
+                    </div>
+                    <span className="flex-1">{item.name}</span>
+                    {isActive && (
+                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse" aria-hidden="true" />
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes slideInUp {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </header>
   )
 }

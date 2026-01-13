@@ -75,7 +75,7 @@
 |-------|--------|--------------|----------------|-----------------|
 | code-surgeon | ❌ | - | 4 | 4 |
 | db-wizard | ❌ | - | 4 | 4 |
-| frontend-designer | ✅ | UI4 | 6 | 3 |
+| frontend-designer | ✅ | UI5 | 6 | 4 |
 | test-architect | ❌ | - | 5 | 0 |
 | doc-smith | ❌ | - | 5 | 1 |
 | devops-automator | ✅ | O4 | 5 | 3 |
