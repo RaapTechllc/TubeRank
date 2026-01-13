@@ -1,13 +1,19 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { requireAuth } from '@/lib/middleware/auth'
+import { withRateLimit } from '@/lib/rate-limit/middleware'
+import { RATE_LIMITS } from '@/lib/rate-limit/config'
 
 const settingsSchema = z.object({
   digest_enabled: z.boolean().optional(),
   default_score_threshold: z.number().min(0).max(100).optional(),
 })
 
-export async function GET() {
+async function handleGET() {
+  const { error, user } = await requireAuth()
+  if (error) return error
+
   const supabase = createServerClient()
 
   try {
@@ -35,7 +41,10 @@ export async function GET() {
   }
 }
 
-export async function PUT(request: Request) {
+async function handlePUT(request: Request) {
+  const { error, user } = await requireAuth()
+  if (error) return error
+
   const supabase = createServerClient()
 
   try {
@@ -93,3 +102,5 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+export const GET = withRateLimit(handleGET, RATE_LIMITS.API)
+export const PUT = withRateLimit(handlePUT, RATE_LIMITS.API)

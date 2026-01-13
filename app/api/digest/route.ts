@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 
-export async function GET() {
+import { requireAuth } from '@/lib/middleware/auth'
+import { withRateLimit } from '@/lib/rate-limit/middleware'
+import { RATE_LIMITS } from '@/lib/rate-limit/config'
+async function handleGET() {
+  const { error, user } = await requireAuth()
+  if (error) return error
+
   const supabase = createServerClient()
 
   try {
@@ -37,3 +43,4 @@ export async function GET() {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+export const GET = withRateLimit(handleGET, RATE_LIMITS.API)

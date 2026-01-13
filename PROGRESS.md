@@ -28,6 +28,19 @@
 3. **Cards API Security**
    - Secured `/api/cards/[id]` (PATCH)
 
+4. **Analytics API Security**
+   - Secured `/api/analytics/performance` (GET)
+   - Secured `/api/analytics/channel-health` (GET)
+   - Secured `/api/analytics/score-distribution` (GET)
+   - Secured `/api/analytics/velocity` (GET)
+   - Secured `/api/analytics/workflow-funnel` (GET)
+
+5. **User Settings API Security**
+   - Secured `/api/settings` (GET, PUT)
+
+6. **Digest API Security**
+   - Secured `/api/digest` (GET)
+
 #### Implementation Details
 - Applied `requireAuth()` middleware to all routes
 - Applied `withRateLimit()` with `RATE_LIMITS.API` config
@@ -35,7 +48,7 @@
 - Used minimal code changes for security integration
 
 ### Next Steps
-- Secure remaining API routes (analytics, cron, etc.)
+- Secure remaining API routes (cron, jobs, rss)
 - Test authentication flows
 - Verify rate limiting behavior
 
@@ -44,3 +57,5 @@
 - Rate limiting middleware already existed at `lib/rate-limit/middleware.ts`
 - Focused on profiles and cards routes as primary user-facing APIs
 - Preserved all existing functionality while adding security layers
+- Health endpoint remains public for monitoring
+- Cron and job endpoints use bearer token auth (different from user auth)

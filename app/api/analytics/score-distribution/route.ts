@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 
+import { requireAuth } from '@/lib/middleware/auth'
+import { withRateLimit } from '@/lib/rate-limit/middleware'
+import { RATE_LIMITS } from '@/lib/rate-limit/config'
 type ScoreDimension = 'overall' | 'relevance' | 'novelty' | 'actionability' | 'credibility' | 'efficiency'
 
 interface HistogramBucket {
@@ -110,7 +113,10 @@ function createHistogram(scores: number[], bucketCount: number = 10): HistogramB
   return buckets
 }
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
+  const { error, user } = await requireAuth()
+  if (error) return error
+
   const searchParams = request.nextUrl.searchParams
   const profileId = searchParams.get('profileId')
   const dimension = (searchParams.get('dimension') || 'overall') as ScoreDimension
@@ -211,3 +217,5 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
+export const GET = withRateLimit(handleGET, RATE_LIMITS.API)

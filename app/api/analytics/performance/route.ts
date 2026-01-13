@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 import { subDays, subYears, format, startOfDay, endOfDay } from 'date-fns'
+import { requireAuth } from '@/lib/middleware/auth'
+import { withRateLimit } from '@/lib/rate-limit/middleware'
+import { RATE_LIMITS } from '@/lib/rate-limit/config'
 
 interface PerformanceDataPoint {
   date: string
@@ -48,7 +51,10 @@ function getDateRange(range: string): { start: Date; end: Date } {
   return { start, end }
 }
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
+  const { error, user } = await requireAuth()
+  if (error) return error
+  
   const searchParams = request.nextUrl.searchParams
   const profileId = searchParams.get('profileId')
   const dateRange = searchParams.get('dateRange') || '30d'
@@ -57,7 +63,6 @@ export async function GET(request: NextRequest) {
   const { start, end } = getDateRange(dateRange)
 
   try {
-    // Use optimized RPC function for aggregation
     const { data: summaryData, error: summaryError } = await supabase.rpc('get_performance_summary', {
       p_profile_id: profileId || null,
       p_start_date: start.toISOString(),
@@ -69,7 +74,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: summaryError.message }, { status: 500 })
     }
 
-    // Use optimized RPC function for daily data
     const { data: dailyData, error: dailyError } = await supabase.rpc('get_performance_analytics', {
       p_profile_id: profileId || null,
       p_start_date: start.toISOString(),
@@ -81,7 +85,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: dailyError.message }, { status: 500 })
     }
 
-    // Format daily data
     const performanceData: PerformanceDataPoint[] = (dailyData || []).map((row: any) => ({
       date: row.date,
       views: Number(row.views),
@@ -91,7 +94,6 @@ export async function GET(request: NextRequest) {
       videoCount: Number(row.video_count)
     }))
 
-    // Format summary
     const summary = (summaryData || [])[0] as any
     const response: PerformanceResponse = {
       data: performanceData,
@@ -115,3 +117,5 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
+export const GET = withRateLimit(handleGET, RATE_LIMITS.API)

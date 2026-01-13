@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 import { subDays } from 'date-fns'
+import { requireAuth } from '@/lib/middleware/auth'
+import { withRateLimit } from '@/lib/rate-limit/middleware'
+import { RATE_LIMITS } from '@/lib/rate-limit/config'
 
 type ColumnStatus = 'inbox' | 'recommended' | 'skim' | 'watch' | 'archived'
 
@@ -47,7 +50,10 @@ const STAGE_LABELS: Record<ColumnStatus, string> = {
   archived: 'Archived'
 }
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
+  const { error, user } = await requireAuth()
+  if (error) return error
+
   const searchParams = request.nextUrl.searchParams
   const profileId = searchParams.get('profileId')
   const days = parseInt(searchParams.get('days') || '30', 10)
@@ -237,3 +243,5 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
+export const GET = withRateLimit(handleGET, RATE_LIMITS.API)

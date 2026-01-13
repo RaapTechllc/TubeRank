@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 
+import { requireAuth } from '@/lib/middleware/auth'
+import { withRateLimit } from '@/lib/rate-limit/middleware'
+import { RATE_LIMITS } from '@/lib/rate-limit/config'
 type SortBy = 'trust' | 'uploads' | 'avgScore' | 'subscribers' | 'name'
 type SortOrder = 'asc' | 'desc'
 
@@ -36,7 +39,10 @@ interface ChannelHealthResponse {
   trustDistribution: TrustScoreDistribution[]
 }
 
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
+  const { error, user } = await requireAuth()
+  if (error) return error
+
   const searchParams = request.nextUrl.searchParams
   const profileId = searchParams.get('profileId')
   const sortBy = (searchParams.get('sortBy') || 'trust') as SortBy
@@ -252,3 +258,5 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
+export const GET = withRateLimit(handleGET, RATE_LIMITS.API)
