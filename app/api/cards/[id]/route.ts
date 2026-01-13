@@ -1,7 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { isValidUUID } from '@/lib/utils/validation'
+import { requireAuth } from '@/lib/middleware/auth'
+import { withRateLimit } from '@/lib/rate-limit/middleware'
+import { RATE_LIMITS } from '@/lib/rate-limit/config'
 
 const updateCardSchema = z.object({
   column_status: z.enum(['inbox', 'recommended', 'skim', 'watch', 'archived']).optional(),
@@ -10,7 +13,10 @@ const updateCardSchema = z.object({
 
 type Params = { params: Promise<{ id: string }> }
 
-export async function PATCH(request: Request, { params }: Params) {
+async function handlePATCH(request: NextRequest, { params }: Params) {
+  const { error, user } = await requireAuth()
+  if (error) return error
+
   const { id } = await params
   
   if (!isValidUUID(id)) {
@@ -31,16 +37,18 @@ export async function PATCH(request: Request, { params }: Params) {
   
   const supabase = createServerClient()
   
-  const { data, error } = await supabase
+  const { data, error: dbError } = await supabase
     .from('profile_video_cards')
     .update({ ...parsed.data, updated_at: new Date().toISOString() })
     .eq('id', id)
     .select()
     .single()
   
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (dbError) {
+    return NextResponse.json({ error: dbError.message }, { status: 500 })
   }
   
   return NextResponse.json(data)
 }
+
+export const PATCH = withRateLimit(handlePATCH, RATE_LIMITS.API)

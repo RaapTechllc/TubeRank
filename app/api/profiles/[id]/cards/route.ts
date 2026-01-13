@@ -1,10 +1,16 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 import { isValidUUID } from '@/lib/utils/validation'
+import { requireAuth } from '@/lib/middleware/auth'
+import { withRateLimit } from '@/lib/rate-limit/middleware'
+import { RATE_LIMITS } from '@/lib/rate-limit/config'
 
 type Params = { params: Promise<{ id: string }> }
 
-export async function GET(request: Request, { params }: Params) {
+async function handleGET(request: NextRequest, { params }: Params) {
+  const { error, user } = await requireAuth()
+  if (error) return error
+
   const { id } = await params
 
   if (!isValidUUID(id)) {
@@ -13,7 +19,6 @@ export async function GET(request: Request, { params }: Params) {
 
   const supabase = createServerClient()
 
-  // Support selective field fetching via fields query parameter
   const url = new URL(request.url)
   const fieldsParam = url.searchParams.get('fields')
 
@@ -71,7 +76,6 @@ export async function GET(request: Request, { params }: Params) {
       `
     }
   } else {
-    // Default: fetch all fields
     selectQuery = `
       *,
       video:videos(*),
@@ -80,18 +84,16 @@ export async function GET(request: Request, { params }: Params) {
     `
   }
 
-  const { data, error } = await supabase
+  const { data, error: dbError } = await supabase
     .from('profile_video_cards')
     .select(selectQuery)
     .eq('profile_id', id)
     .order('position', { ascending: true })
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (dbError) {
+    return NextResponse.json({ error: dbError.message }, { status: 500 })
   }
 
-  // Flatten nested arrays to single objects (first match for this profile)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cards = (data as any[]).map((card: any) => ({
     ...card,
     score: Array.isArray(card.score) ? card.score[0] : card.score,
@@ -100,3 +102,5 @@ export async function GET(request: Request, { params }: Params) {
 
   return NextResponse.json(cards)
 }
+
+export const GET = withRateLimit(handleGET, RATE_LIMITS.API)

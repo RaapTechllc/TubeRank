@@ -1,11 +1,17 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase/server'
 import { createSourceSchema } from '@/lib/validations/profile'
 import { isValidUUID } from '@/lib/utils/validation'
+import { requireAuth } from '@/lib/middleware/auth'
+import { withRateLimit } from '@/lib/rate-limit/middleware'
+import { RATE_LIMITS } from '@/lib/rate-limit/config'
 
 type Params = { params: Promise<{ id: string }> }
 
-export async function GET(_request: Request, { params }: Params) {
+async function handleGET(_request: NextRequest, { params }: Params) {
+  const { error, user } = await requireAuth()
+  if (error) return error
+
   const { id } = await params
   
   if (!isValidUUID(id)) {
@@ -14,20 +20,23 @@ export async function GET(_request: Request, { params }: Params) {
   
   const supabase = createServerClient()
   
-  const { data, error } = await supabase
+  const { data, error: dbError } = await supabase
     .from('profile_sources')
     .select('*')
     .eq('profile_id', id)
     .order('created_at', { ascending: false })
   
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (dbError) {
+    return NextResponse.json({ error: dbError.message }, { status: 500 })
   }
   
   return NextResponse.json(data)
 }
 
-export async function POST(request: Request, { params }: Params) {
+async function handlePOST(request: NextRequest, { params }: Params) {
+  const { error, user } = await requireAuth()
+  if (error) return error
+
   const { id } = await params
   
   if (!isValidUUID(id)) {
@@ -48,23 +57,26 @@ export async function POST(request: Request, { params }: Params) {
   
   const supabase = createServerClient()
   
-  const { data, error } = await supabase
+  const { data, error: dbError } = await supabase
     .from('profile_sources')
     .insert({ ...parsed.data, profile_id: id })
     .select()
     .single()
   
-  if (error) {
-    if (error.code === '23505') {
+  if (dbError) {
+    if (dbError.code === '23505') {
       return NextResponse.json({ error: 'Source already exists' }, { status: 409 })
     }
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: dbError.message }, { status: 500 })
   }
   
   return NextResponse.json(data, { status: 201 })
 }
 
-export async function DELETE(request: Request, { params }: Params) {
+async function handleDELETE(request: NextRequest, { params }: Params) {
+  const { error, user } = await requireAuth()
+  if (error) return error
+
   const { id } = await params
   
   if (!isValidUUID(id)) {
@@ -84,15 +96,19 @@ export async function DELETE(request: Request, { params }: Params) {
   
   const supabase = createServerClient()
   
-  const { error } = await supabase
+  const { error: dbError } = await supabase
     .from('profile_sources')
     .delete()
     .eq('id', sourceId)
     .eq('profile_id', id)
   
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (dbError) {
+    return NextResponse.json({ error: dbError.message }, { status: 500 })
   }
   
   return NextResponse.json({ success: true })
 }
+
+export const GET = withRateLimit(handleGET, RATE_LIMITS.API)
+export const POST = withRateLimit(handlePOST, RATE_LIMITS.API)
+export const DELETE = withRateLimit(handleDELETE, RATE_LIMITS.API)
