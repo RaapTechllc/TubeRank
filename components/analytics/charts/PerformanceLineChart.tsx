@@ -38,7 +38,7 @@ const METRIC_CONFIG = {
   },
 }
 
-function CustomTooltip({ active, payload, label }: any) {
+function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; name: string; color: string }>; label?: string }) {
   if (!active || !payload || !payload.length) return null
 
   const date = parseISO(label)
@@ -48,7 +48,7 @@ function CustomTooltip({ active, payload, label }: any) {
     <div className="editorial-card p-3 text-sm">
       <p className="font-semibold text-[var(--foreground)] mb-2">{formattedDate}</p>
       <div className="space-y-1">
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry: { value: number; name: string; color: string }, index: number) => (
           <div key={index} className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <span

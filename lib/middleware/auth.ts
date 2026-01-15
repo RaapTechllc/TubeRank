@@ -23,8 +23,8 @@ export async function requireAuth() {
 /**
  * Wrapper for API routes that require authentication
  */
-export function withAuth<T extends any[]>(
-  handler: (user: any, ...args: T) => Promise<NextResponse>
+export function withAuth<T extends unknown[]>(
+  handler: (user: { id: string }, ...args: T) => Promise<NextResponse>
 ) {
   return async (...args: T): Promise<NextResponse> => {
     const { error, user } = await requireAuth()

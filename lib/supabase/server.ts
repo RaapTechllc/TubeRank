@@ -8,3 +8,6 @@ export function createServerClient() {
     env.SUPABASE_SERVICE_ROLE_KEY
   )
 }
+
+// Alias for compatibility
+export { createServerClient as createClient }

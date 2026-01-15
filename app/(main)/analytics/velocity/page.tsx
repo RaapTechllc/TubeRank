@@ -31,7 +31,7 @@ const PIE_COLORS = [
   'var(--chart-5)',
 ]
 
-function CustomTooltip({ active, payload, label }: any) {
+function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; name: string; color: string }>; label?: string }) {
   if (!active || !payload || !payload.length) return null
 
   return (
@@ -40,7 +40,7 @@ function CustomTooltip({ active, payload, label }: any) {
         {format(parseISO(label), 'MMM d, yyyy')}
       </p>
       <div className="space-y-1">
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry: { value: number; name: string; color: string }, index: number) => (
           <div key={index} className="flex items-center justify-between gap-4">
             <span className="text-[var(--muted-foreground)]">{entry.name}</span>
             <span className="font-medium text-[var(--foreground)] text-data">

@@ -16,7 +16,7 @@ interface ScoreRadarChartProps {
   height?: number
 }
 
-function CustomTooltip({ active, payload }: any) {
+function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<{ value: number; payload: Record<string, unknown> }> }) {
   if (!active || !payload || !payload.length) return null
 
   const data = payload[0].payload as RadarData

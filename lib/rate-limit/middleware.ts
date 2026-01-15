@@ -36,10 +36,10 @@ function getClientIdentifier(request: NextRequest): string {
 }
 
 export function withRateLimit(
-  handler: (request: NextRequest, context?: any) => Promise<NextResponse>,
+  handler: (request: NextRequest, context?: Record<string, unknown>) => Promise<NextResponse>,
   config: RateLimitConfig
 ) {
-  return async (request: NextRequest, context?: any): Promise<NextResponse> => {
+  return async (request: NextRequest, context?: Record<string, unknown>): Promise<NextResponse> => {
     const limiter = getLimiter(config)
     const identifier = getClientIdentifier(request)
 
@@ -71,11 +71,11 @@ export function withRateLimit(
 }
 
 export function withRateLimitByKey(
-  handler: (request: NextRequest, context?: any) => Promise<NextResponse>,
+  handler: (request: NextRequest, context?: Record<string, unknown>) => Promise<NextResponse>,
   config: RateLimitConfig,
-  keyExtractor: (request: NextRequest, context?: any) => string
+  keyExtractor: (request: NextRequest, context?: Record<string, unknown>) => string
 ) {
-  return async (request: NextRequest, context?: any): Promise<NextResponse> => {
+  return async (request: NextRequest, context?: Record<string, unknown>): Promise<NextResponse> => {
     const limiter = getLimiter(config)
     const identifier = getClientIdentifier(request)
     const customKey = keyExtractor(request, context)

@@ -106,7 +106,7 @@ async function handleGET(request: NextRequest, { params }: Params) {
     return NextResponse.json({ error: dbError.message }, { status: 500 })
   }
 
-  const cards = (data as any[]).map((card: any) => ({
+  const cards = (data as Record<string, unknown>[]).map((card: Record<string, unknown>) => ({
     ...card,
     score: Array.isArray(card.score) ? card.score[0] : card.score,
     summary: Array.isArray(card.summary) ? card.summary[0] : card.summary,

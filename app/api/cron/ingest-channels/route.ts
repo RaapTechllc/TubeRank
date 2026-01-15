@@ -60,7 +60,7 @@ export async function GET(request: Request) {
         await markJobRunning(job.id, job.attempts)
 
         // Process the job
-        const result = await processChannelJob(job.id, job.payload as any)
+        const result = await processChannelJob(job.id, job.payload as Record<string, unknown>)
 
         if (result.success) {
           // Mark as completed
@@ -76,7 +76,7 @@ export async function GET(request: Request) {
             // Max attempts reached - mark failed and create alert
             await markJobFailed(job.id, result.error || 'Unknown error', false)
 
-            const payload = job.payload as any
+            const payload = job.payload as Record<string, unknown>
             await supabase
               .from('alerts')
               .insert({

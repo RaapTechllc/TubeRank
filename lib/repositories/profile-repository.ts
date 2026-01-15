@@ -2,9 +2,9 @@
  * Profile repository for profiles operations
  */
 export class ProfileRepository {
-  private supabase: any
+  private supabase: ReturnType<typeof import('@supabase/supabase-js').createClient>
 
-  constructor(supabase: any) {
+  constructor(supabase: ReturnType<typeof import('@supabase/supabase-js').createClient>) {
     this.supabase = supabase
   }
 

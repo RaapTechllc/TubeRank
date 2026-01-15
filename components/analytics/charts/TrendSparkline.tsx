@@ -1,5 +1,7 @@
 'use client'
 
+import { useId } from 'react'
+
 import {
   AreaChart,
   Area,
@@ -28,6 +30,9 @@ export function TrendSparkline({
   showGradient = true,
   trend,
 }: TrendSparklineProps) {
+  // Generate unique gradient ID (must be before any early returns)
+  const gradientId = useId()
+  
   // Normalize data to array of objects
   const normalizedData = data.map((d, i) => ({
     index: i,
@@ -52,8 +57,6 @@ export function TrendSparkline({
     'var(--chart-1)'
   )
 
-  // Generate unique gradient ID
-  const gradientId = `sparkline-gradient-${Math.random().toString(36).substr(2, 9)}`
 
   return (
     <div style={{ height, width }}>

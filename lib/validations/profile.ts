@@ -22,7 +22,7 @@ export const scoreWeightsSchema = z.object({
 export const createProfileSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
-  type: z.enum(['channel_stack', 'video_set', 'keyword_radar', 'category_pulse', 'custom']).default('custom'),
+  type: z.enum(['channel_stack', 'video_set', 'keyword_radar', 'category_pulse', 'custom']),
   system_prompt: z.string().max(2000).optional(),
   score_weights: scoreWeightsSchema.optional(),
 })

@@ -21,7 +21,7 @@ interface ScoreHistogramProps {
   showMedian?: boolean
 }
 
-function CustomTooltip({ active, payload }: any) {
+function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: { range: string; count: number; percentage: number } }> }) {
   if (!active || !payload || !payload.length) return null
 
   const data = payload[0].payload as HistogramBucket
@@ -187,7 +187,7 @@ export function ScoreHistogramSkeleton({ height = 300 }: { height?: number }) {
             <div
               key={i}
               className="flex-1 bg-[var(--muted)] rounded-t"
-              style={{ height: `${Math.random() * 80 + 20}%` }}
+              style={{ height: `${(i + 1) * 10}%` }}
             />
           ))}
         </div>

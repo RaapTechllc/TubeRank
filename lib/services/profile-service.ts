@@ -7,7 +7,7 @@ import type { ProfileWithSources } from '@/types'
 export class ProfileService {
   private profileRepo: ProfileRepository
 
-  constructor(supabase: any) {
+  constructor(supabase: ReturnType<typeof import('@supabase/supabase-js').createClient>) {
     this.profileRepo = new ProfileRepository(supabase)
   }
 

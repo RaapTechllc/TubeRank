@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react'
 
@@ -36,6 +36,11 @@ export function ToastComponent({ id, type, title, description, duration = 5000, 
   
   const Icon = icons[type]
   
+  const handleRemove = useCallback(() => {
+    setIsLeaving(true)
+    setTimeout(() => onRemove(id), 300)
+  }, [id, onRemove])
+  
   useEffect(() => {
     // Animate in
     const timer = setTimeout(() => setIsVisible(true), 50)
@@ -49,12 +54,7 @@ export function ToastComponent({ id, type, title, description, duration = 5000, 
       }, duration)
       return () => clearTimeout(timer)
     }
-  }, [duration])
-  
-  const handleRemove = () => {
-    setIsLeaving(true)
-    setTimeout(() => onRemove(id), 300)
-  }
+  }, [duration, handleRemove])
   
   return (
     <div

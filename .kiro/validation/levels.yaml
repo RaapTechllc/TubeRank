@@ -1,0 +1,37 @@
+# Validation Levels Configuration
+
+levels:
+  # Level 1: Syntax & Style (REQUIRED)
+  syntax:
+    required: true
+    commands:
+      - condition: "[ -f package.json ]"
+        run: "pnpm lint"
+        name: "ESLint"
+      - condition: "[ -f tsconfig.json ]"
+        run: "pnpm typecheck"
+        name: "TypeScript"
+        
+  # Level 2: Unit Tests (REQUIRED)
+  unit_tests:
+    required: true
+    commands:
+      - condition: "[ -f package.json ]"
+        run: "pnpm test"
+        name: "Vitest"
+        
+  # Level 3: Integration Tests (OPTIONAL)
+  integration:
+    required: false
+    commands:
+      - condition: "[ -f package.json ]"
+        run: "pnpm test:e2e"
+        name: "E2E Tests"
+        
+  # Level 4: Build (OPTIONAL)
+  build:
+    required: false
+    commands:
+      - condition: "[ -f package.json ]"
+        run: "pnpm build"
+        name: "Build"

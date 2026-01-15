@@ -2,9 +2,9 @@
  * Card repository for profile_video_cards operations
  */
 export class CardRepository {
-  private supabase: any
+  private supabase: ReturnType<typeof import('@supabase/supabase-js').createClient>
 
-  constructor(supabase: any) {
+  constructor(supabase: ReturnType<typeof import('@supabase/supabase-js').createClient>) {
     this.supabase = supabase
   }
 
@@ -85,7 +85,7 @@ export class CardRepository {
 
     if (error) throw error
 
-    return data.map((card: any) => ({
+    return data.map((card: Record<string, unknown>) => ({
       ...card,
       score: Array.isArray(card.score) ? card.score[0] : card.score,
       summary: Array.isArray(card.summary) ? card.summary[0] : card.summary,

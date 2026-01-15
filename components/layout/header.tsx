@@ -27,8 +27,9 @@ export function Header() {
   }
 
   // Close mobile menu on route change
+  // eslint-disable-next-line react-compiler/react-compiler
   useEffect(() => {
-    closeMobileMenu()
+    setIsMobileMenuOpen(false)
   }, [pathname])
 
   // Prevent body scroll when mobile menu is open

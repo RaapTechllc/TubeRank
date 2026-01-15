@@ -1,45 +1,62 @@
-# Create PRD
+# Create Product Requirement Document
 
-## Objective
-Create or refresh the PRD so it matches the real project and stays demo-focused.
+Create a structured PRD with implementation phases for: $ARGUMENTS
 
-## Non-negotiables
-- Keep scope brutal. MVP first.
-- No paid services required in default local mode.
-- Settings must stay simple to avoid bug farms.
+## Process
 
-## Inputs
-Read:
-- `.kiro/steering/product.md` (if exists)
-- `.kiro/steering/tech.md` (if exists)
-- `.kiro/steering/structure.md` (if exists)
-- `README.md`
-- `DEVLOG.md`
-- any existing PRD in `docs/prd/`
+1. **Analyze the request** - Understand what's being asked
+2. **Research the codebase** - Find relevant files, patterns, dependencies
+3. **Create the PRD** with all sections below
 
-## Output file
-Write / update:
-- `docs/prd/[project-name].md`
+## Output: Save to `.kiro/specs/prds/{feature-slug}.prd.md`
 
-## PRD must include
-- One-liner
-- Problem
-- Target user
-- Main outcome for the user
-- Key differentiators
-- MVP features (3–5)
-- Core user flow (demo path)
-- Acceptance criteria (testable)
-- Out of scope
+## PRD Template
 
-## Required repo updates
-- If PRD changes product decisions, also update `.kiro/steering/product.md`.
-- Append to `DEVLOG.md` (UTC):
-  - What changed (docs)
-  - What was tested (usually N/A)
-  - What's next
+```markdown
+# PRD: {Feature Name}
 
-## Output
-- File path
-- Ready-to-paste markdown
-- Recommended next steps (do not execute commands)
+**Created:** {date}
+**Status:** ACTIVE
+
+## Goal
+{What are we building? One paragraph max.}
+
+## Why
+{Business value, user impact. Why now?}
+
+## What
+{Detailed feature description}
+
+### Success Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+### Out of Scope
+- Item 1
+
+## Implementation Phases
+
+| Phase | Description | Status | Dependencies |
+|-------|-------------|--------|--------------|
+| 1 | {description} | PENDING | None |
+| 2 | {description} | PENDING | Phase 1 |
+
+### Phase Details
+
+#### Phase 1: {Name}
+- Task 1.1: ...
+- Validation: {how to verify}
+
+## Technical Context
+
+### Relevant Files
+- `path/to/file.ts` - {why relevant}
+
+### Known Gotchas
+> CRITICAL: {gotcha}
+
+## Progress Log
+| Date | Phase | Update |
+|------|-------|--------|
+| {date} | - | PRD created |
+```

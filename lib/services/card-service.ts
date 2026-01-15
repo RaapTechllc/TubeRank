@@ -7,7 +7,7 @@ import type { CardWithVideo } from '@/types'
 export class CardService {
   private cardRepo: CardRepository
 
-  constructor(supabase: any) {
+  constructor(supabase: ReturnType<typeof import('@supabase/supabase-js').createClient>) {
     this.cardRepo = new CardRepository(supabase)
   }
 

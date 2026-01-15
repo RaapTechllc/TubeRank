@@ -85,7 +85,7 @@ async function handleGET(request: NextRequest) {
       return NextResponse.json({ error: dailyError.message }, { status: 500 })
     }
 
-    const performanceData: PerformanceDataPoint[] = (dailyData || []).map((row: any) => ({
+    const performanceData: PerformanceDataPoint[] = (dailyData || []).map((row: Record<string, unknown>) => ({
       date: row.date,
       views: Number(row.views),
       likes: Number(row.likes),
@@ -94,7 +94,7 @@ async function handleGET(request: NextRequest) {
       videoCount: Number(row.video_count)
     }))
 
-    const summary = (summaryData || [])[0] as any
+    const summary = (summaryData || [])[0] as Record<string, unknown>
     const response: PerformanceResponse = {
       data: performanceData,
       summary: {

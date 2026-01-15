@@ -103,8 +103,8 @@ export async function fetchYouTubeChannelFeed(
       throw error
     }
 
-    const statusCode = (error as any)?.statusCode ||
-                      (error as any)?.response?.status
+    const statusCode = (error as { statusCode?: number; response?: { status?: number } })?.statusCode ||
+                      (error as { statusCode?: number; response?: { status?: number } })?.response?.status
 
     if (statusCode === 404) {
       throw new RSSFetchError(

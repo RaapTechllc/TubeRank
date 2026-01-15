@@ -42,7 +42,7 @@ export function LoadingSkeleton({ className, lines = 1 }: LoadingSkeletonProps) 
           key={i}
           className="h-4 bg-muted rounded animate-pulse"
           style={{ 
-            width: `${Math.random() * 40 + 60}%`,
+            width: `${60 + (i % 4) * 10}%`,
             animationDelay: `${i * 0.1}s`
           }}
         />

@@ -1,0 +1,31 @@
+{
+  "name": "specialist-template",
+  "description": "Base template for creating specialist agents - copy and customize",
+  "prompt": "You are a specialist agent. Customize this prompt for your domain.\n\n**Your Focus:**\n- [Define primary responsibilities]\n- [Define secondary responsibilities]\n\n**Checklist:**\n1. [Step 1]\n2. [Step 2]\n3. [Step 3]\n\n**Output Format:**\n[Define expected output]\n\n**Completion:**\nWhen task complete, update PROGRESS.md and output:\n<promise>DONE</promise>",
+  "model": "auto",
+  "tools": ["read", "write", "glob", "grep"],
+  "allowedTools": ["read", "write", "glob", "grep"],
+  "resources": ["file://CLAUDE.md", "file://PROGRESS.md"],
+  "toolsSettings": {
+    "read": {
+      "allowedPaths": ["./.kiro/**", "./app/**", "./lib/**"]
+    },
+    "write": {
+      "allowedPaths": ["./app/**", "./lib/**", "./PROGRESS.md"]
+    }
+  },
+  "hooks": {
+    "agentSpawn": [
+      {
+        "command": "bash .kiro/scripts/inject-context.sh 2>/dev/null || echo 'Context script not found'",
+        "timeout_ms": 5000
+      }
+    ],
+    "stop": [
+      {
+        "command": "bash .kiro/scripts/quick-validate.sh 2>/dev/null",
+        "timeout_ms": 10000
+      }
+    ]
+  }
+}

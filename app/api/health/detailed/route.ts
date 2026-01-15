@@ -1,8 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/supabase/server';
+
+interface HealthCheck {
+  status: string;
+  error?: string;
+  missing?: string[];
+  heapUsedMB?: number;
+  heapTotalMB?: number;
+}
+
+interface HealthResponse {
+  timestamp: string;
+  status: string;
+  checks: {
+    database: HealthCheck;
+    environment: HealthCheck;
+    memory: HealthCheck;
+  };
+}
 
 export async function GET(request: NextRequest) {
-  const checks = {
+  const checks: HealthResponse = {
     timestamp: new Date().toISOString(),
     status: 'healthy',
     checks: {
@@ -14,7 +32,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // Database connectivity check
-    const supabase = await createClient();
+    const supabase = createServerClient();
     const { error: dbError } = await supabase.from('profiles').select('count').limit(1);
     
     checks.checks.database = {

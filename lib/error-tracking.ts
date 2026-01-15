@@ -1,15 +1,16 @@
 import * as Sentry from "@sentry/nextjs";
+import type { Scope } from "@sentry/nextjs";
 
 export interface ErrorContext {
   userId?: string;
   action?: string;
   resource?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export class ErrorTracker {
   static captureException(error: Error, context?: ErrorContext) {
-    Sentry.withScope((scope) => {
+    Sentry.withScope((scope: Scope) => {
       if (context?.userId) {
         scope.setUser({ id: context.userId });
       }
@@ -27,7 +28,7 @@ export class ErrorTracker {
   }
 
   static captureMessage(message: string, level: "info" | "warning" | "error" = "info", context?: ErrorContext) {
-    Sentry.withScope((scope) => {
+    Sentry.withScope((scope: Scope) => {
       if (context?.userId) {
         scope.setUser({ id: context.userId });
       }
@@ -42,7 +43,7 @@ export class ErrorTracker {
     Sentry.setUser({ id: userId });
   }
 
-  static addBreadcrumb(message: string, category?: string, data?: Record<string, any>) {
+  static addBreadcrumb(message: string, category?: string, data?: Record<string, unknown>) {
     Sentry.addBreadcrumb({
       message,
       category: category || "custom",

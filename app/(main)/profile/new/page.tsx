@@ -111,7 +111,7 @@ export default function NewProfilePage() {
               <Select
                 id="type"
                 value={formData.type}
-                onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as any }))}
+                onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as 'custom' | 'channel_stack' | 'video_set' | 'keyword_radar' | 'category_pulse' }))}
               >
                 <SelectItem value="custom">Custom</SelectItem>
                 <SelectItem value="channel_stack">Channel Stack</SelectItem>

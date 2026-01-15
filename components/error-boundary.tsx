@@ -59,7 +59,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               </div>
             </div>
             <div className="text-sm text-gray-600 mb-4">
-              We've been notified about this error and will fix it soon.
+              We&apos;ve been notified about this error and will fix it soon.
             </div>
             <button
               onClick={this.resetError}

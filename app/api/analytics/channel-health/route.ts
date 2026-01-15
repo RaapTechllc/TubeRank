@@ -83,7 +83,7 @@ async function handleGET(request: NextRequest) {
     const channelIds = channels.map(c => c.id)
 
     // Fetch videos for these channels with their scores
-    let videosQuery = supabase
+    const videosQuery = supabase
       .from('videos')
       .select(`
         id,

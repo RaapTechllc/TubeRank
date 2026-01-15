@@ -66,8 +66,8 @@ export function getNextFocusableElement(currentElement: HTMLElement, direction: 
   const currentIndex = focusableElements.indexOf(currentElement)
   
   if (direction === 'next') {
-    return focusableElements[currentIndex + 1] || focusableElements[0]
+    return focusableElements[currentIndex + 1] ?? focusableElements[0] ?? null
   } else {
-    return focusableElements[currentIndex - 1] || focusableElements[focusableElements.length - 1]
+    return focusableElements[currentIndex - 1] ?? focusableElements[focusableElements.length - 1] ?? null
   }
 }
