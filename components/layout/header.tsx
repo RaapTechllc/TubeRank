@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -27,9 +27,12 @@ export function Header() {
   }
 
   // Close mobile menu on route change
-  // eslint-disable-next-line react-compiler/react-compiler
+  const prevPathname = useRef(pathname)
   useEffect(() => {
-    setIsMobileMenuOpen(false)
+    if (prevPathname.current !== pathname) {
+      prevPathname.current = pathname
+      setIsMobileMenuOpen(false)
+    }
   }, [pathname])
 
   // Prevent body scroll when mobile menu is open

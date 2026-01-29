@@ -21,10 +21,10 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 )
 Select.displayName = "Select"
 
-const SelectTrigger = ({ children, ...props }: any) => children
-const SelectValue = ({ children, ...props }: any) => children
-const SelectContent = ({ children, ...props }: any) => children
-const SelectItem = ({ value, children, ...props }: any) => (
+const SelectTrigger = ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => children
+const SelectValue = ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => children
+const SelectContent = ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => children
+const SelectItem = ({ value, children, ...props }: { value: string; children?: React.ReactNode; [key: string]: unknown }) => (
   <option value={value} {...props}>{children}</option>
 )
 

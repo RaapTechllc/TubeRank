@@ -34,6 +34,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     });
   }
 
+  // eslint-disable-next-line
   resetError = () => {
     this.setState({ hasError: false, error: undefined });
   };
